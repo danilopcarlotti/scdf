@@ -1,0 +1,5 @@
+*.csv
+rascunhos.py
+*.pyc
+*.pickle
+*.bin
