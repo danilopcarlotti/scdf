@@ -1,0 +1,5 @@
+sklearn
+gensim
+matplotlib
+pandas
+bs4
