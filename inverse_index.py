@@ -7,12 +7,12 @@ class inverse_index():
 	def __init__(self):
 		pass
 
-	def dicionario_invertido_id_texto(self,dados,dicionario_i = {},path_to_files=False):
+	def dicionario_invertido_id_texto(self, dados, dicionario_i = {}, path_to_files=False):
 		for id_,texto in dados:
 			if path_to_files:
-				dicionario_i_text = set(self.normalize_texts(self.file_to_string(texto),one_text=True))
+				dicionario_i_text = set(self.normalize_texts(self.file_to_string(texto), one_text=True))
 			else:
-				dicionario_i_text = set(self.normalize_texts(texto,one_text=True))
+				dicionario_i_text = set(self.normalize_texts(texto, one_text=True))
 			for w in dicionario_i_text:
 				if w in dicionario_i:
 					dicionario_i[w].append(id_)

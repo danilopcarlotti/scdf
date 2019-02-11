@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 from gensim.models import Word2Vec
 from inverse_index import inverse_index
 from matplotlib import pyplot
-from sklearn.decomposition import PCA
 import re, sys, pandas as pd
 
 class word2vec_textos():

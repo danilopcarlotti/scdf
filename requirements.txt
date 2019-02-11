@@ -3,3 +3,7 @@ gensim
 matplotlib
 pandas
 bs4
+pickle
+numpy
+nltk
+networkx
