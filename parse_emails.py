@@ -49,6 +49,8 @@ class parse_emails():
 	def email_to_excel(self, filepath, lista_emails=False, filename='Emails/relatório_emails.xlsx'):
 		if not lista_emails:
 			lista_emails = [i for i in self.paths_to_emails(filepath) if i[-4:] == '.msg']
+		else:
+			lista_emails = filepath
 		rows = []
 		for msg in lista_emails:
 			body_e, date_e, from_e, recipient_e, subject_e, subject_e_clean, attachments = self.parse_msg(msg)
@@ -72,13 +74,14 @@ class parse_emails():
 					dicionario_aux['destinatário_email'] = recipient_e[0][1]
 				else:
 					dicionario_aux['destinatário_nome'] = ''
-					dicionario_aux['destinatário_email'] = ''
+				dicionario_aux['destinatário_email'] = ''
 				rows.append(dicionario_aux)
-		index = [i for i in range(len(rows))]
-		df = pd.DataFrame(rows,index=index)
-		df = df.applymap(lambda x: x.encode('unicode-escape','replace').decode('utf-8') if isinstance(x, str) else x)
-		df.to_excel(filename,index=False)
-		self.docs_to_txt()
+		if len(rows):
+			index = [i for i in range(len(rows))]
+			df = pd.DataFrame(rows,index=index)
+			df = df.applymap(lambda x: x.encode('unicode-escape','replace').decode('utf-8') if isinstance(x, str) else x)
+			df.to_excel(filename,index=False)
+			self.docs_to_txt()
 
 	def email_to_graph(self,filename='Emails/relatório_emails.xlsx'):
 		df = pd.read_excel(filename)
@@ -124,8 +127,8 @@ class parse_emails():
 		anexos_nomes = []
 		if date_e:
 			date_e = date_e.strftime("%d/%m/%Y")
-		nome_pasta = filepath.split('/')[-1][:-4]
-		subprocess.Popen('mkdir %s' % (nome_pasta,), shell=True)
+		nome_pasta = filepath[:-4]
+		subprocess.Popen('mkdir "%s"' % (nome_pasta,), shell=True)
 		self.email_to_html(mail.body, filepath, nome_pasta)
 		if len(mail.attachments):
 			for att in mail.attachments:
@@ -135,7 +138,7 @@ class parse_emails():
 						f.write(base64.b64decode(att['payload']))
 					except: 
 						pass
-				subprocess.Popen('mv "%s" %s' % (att['filename'],nome_pasta), shell=True) 
+				subprocess.Popen('mv "%s" "%s"' % (att['filename'],nome_pasta), shell=True) 
 		return (body_e, date_e, from_e, recipient_e, subject_e, subject_e_clean, anexos_nomes)
 
 	def paths_to_emails(self,filepath):
@@ -170,13 +173,16 @@ class parse_emails():
 		df.to_excel('relatório_'+nome_entidade+'.xlsx',index=False)
 
 	def relatorio_geral(self, filename='Emails/relatório_emails.xlsx', report_name='Emails/relatório_geral.txt'):
-		relatorio_txt = open(report_name,'w')
-		df = pd.read_excel(filename)
+		try:
+			df = pd.read_excel(filename)
+		except:
+			return
 		df = df.fillna(' ')
 		contacts = self.email_contacts(filename=filename)
 		names_email = self.email_names(filename=filename)
 		subjects = self.email_subjects(filename=filename)
 		transactions = self.email_bank_transactions(filename=filename)
+		relatorio_txt = open(report_name,'w')
 		relatorio_txt.write('Arquivos de emails disponíveis:\n\n\n')
 		for n in names_email:
 			relatorio_txt.write(str(n)+'\n')

@@ -18,7 +18,7 @@ class word2vec_textos():
 			script.extract()
 		return soup.get_text()
 
-	def create_model(self, path_texto=None, path_multiple=None):
+	def create_model(self, path_texto=None, path_multiple=None, filepath='word2vec_model.bin'):
 		if path_multiple:
 			sentences = []
 			for p in path_multiple:
@@ -26,7 +26,7 @@ class word2vec_textos():
 		else:
 			sentences = [self.file_to_string(path_texto).lower().split()]
 		model = Word2Vec(sentences, min_count=1, size=150)
-		model.save('word2vec_model.bin')
+		model.save(filepath)
 
 	def load_model(self,filepath='word2vec_model.bin'):
 		self.modelo = Word2Vec.load(filepath)

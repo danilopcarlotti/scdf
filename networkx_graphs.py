@@ -37,7 +37,7 @@ class networkx_graphs():
 		return networkx.degree_centrality(self.graph)
 	
 	def degree_edges(self):
-		return sorted([(n,d) for n, d in nt.graph.degree()],key=lambda x: x[1],reverse=True)
+		return sorted([(n,d) for n, d in self.graph.degree()],key=lambda x: x[1],reverse=True)
 
 	def get_edge_attributes(self, attr='weight', sorted_tuples=False):
 		values_dic = nx.get_edge_attributes(self.graph,attr)
