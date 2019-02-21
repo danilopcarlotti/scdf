@@ -1,4 +1,4 @@
-from index_files import index_files
+	from index_files import index_files
 from inverse_index import inverse_index
 from networkx_graphs import networkx_graphs
 from parse_emails import parse_emails
@@ -41,7 +41,7 @@ def processar_arquivo_texto(filepaths):
 	for filepath in filepaths:
 		if filepath[-4:] == 'docx' or filepath[-3:] == 'pdf' or filepath[-3:] == 'doc':
 			texto = TIKA_CLASS.process_file(filepath)
-			arq = open(filepath.split('.')[0]+'.txt','w')
+			arq = open(filepath.replace('.docx','.txt').replace('.pdf','.txt').replace('.doc','.txt'),'w')
 			arq.write(texto)
 			arq.close()
 
