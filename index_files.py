@@ -1,12 +1,12 @@
 from recursive_folders import recursive_folders
-import pandas as pd
+import pandas as pd, sys
 
 class index_files():
+
 	def __init__(self, files_path):
 		self.files_path = files_path
 		self.recursive = recursive_folders()
 	
-
 	def file_type(self, file_name):
 		return file_name.split('/')[-1].split('.')[-1]
 	
@@ -43,9 +43,9 @@ class index_files():
 			elif excel_file:
 				self.paths_df().to_excel(name_file+'.xlsx',index=False)
 
-def main():
-	i = index_files('')
-	i.save_paths_file('indexação_arquivos_teste',csv_file=True)
+def main(files_path, id_inv):
+	i = index_files(files_path)
+	i.save_paths_file('indexação_arquivos_%s' % (str(id_inv),),csv_file=True)
 
 if __name__ == '__main__':
-	main()
+	main(sys.argv[1],sys.argv[2])

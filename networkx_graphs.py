@@ -64,3 +64,6 @@ class networkx_graphs():
 		'Quantidade de arestas entre nós' : nt.get_edge_attributes(sorted_tuples=True)
 		}
 		return dicionario_resultados
+
+if __name__ == '__main__':
+	pass

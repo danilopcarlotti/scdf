@@ -5,6 +5,7 @@ from matplotlib import pyplot
 import re, sys, pandas as pd
 
 class word2vec_textos():
+	
 	def __init__(self):
 		self.modelo = None
 		inv = inverse_index()
@@ -31,21 +32,13 @@ class word2vec_textos():
 	def load_model(self,filepath='word2vec_model.bin'):
 		self.modelo = Word2Vec.load(filepath)
 
+	def pesquisar_palavra(self,palavra,filepath='word2vec_model.bin',topn=30):
+		self.load_model(filepath=filepath)
+		print(sorted(self.modelo.most_similar(palavra,topn=topn),key=lambda x: abs(float(x[1])),reverse=True))
+
 def main():
-	w = word2vec_textos()
-	
-	# GERA O MODELO
-	# filepath = 'indexação_arquivos_teste.csv'
-	# df = pd.read_csv(filepath, nrows=100)
-	# paths = []
-	# for index, row in df.iterrows():
-	# 	if row['TIPO_ARQUIVO'] == 'txt':
-	# 		paths.append(row['PATH_ARQUIVO'])
-	# w.create_model(path_multiple=paths)
-	
-	# VOCABULÁRIO
-	# w.load_model()
-	# print(list(w.modelo.wv.vocab))
+	pass
 
 if __name__ == '__main__':
-	main()
+	w = word2vec_textos()
+	w.pesquisar_palavra(sys.argv[1])

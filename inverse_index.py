@@ -1,6 +1,6 @@
 from nltk.tokenize import RegexpTokenizer
 from gensim import corpora, models
-import gensim, nltk, pickle, pandas as pd, re
+import gensim, nltk, pickle, pandas as pd, re, sys
 
 class inverse_index():
 	"""Manipula topic models"""
@@ -20,7 +20,9 @@ class inverse_index():
 					dicionario_i[w] = [id_]
 		return dicionario_i
 
-	def encontra_doc_palavra(self, dicionario, palavra):
+	def encontra_doc_palavra(self, palavra, dicionario=None):
+		if not dicionario:
+			dicionario = pickle.load(open('indice_invertido.pickle','rb'))
 		documentos = []
 		for k,v in dicionario.items():
 			if re.search(palavra,k):
@@ -60,24 +62,9 @@ class inverse_index():
 	def tokenizer(self):
 		return RegexpTokenizer(r'\w+')
 
-def main(file_path, csv_file=True, excel_file=False):
+def main():
 	pass
 
-	# CRIAÇÃO DE DICIONÃRIO
-	# if csv_file:
-	# 	df = pd.read_csv(file_path)
-	# paths = []
-	# for index, row in df.iterrows():
-	# 	if row['TIPO_ARQUIVO'] == 'txt':
-	# 		paths.append((row['ID'], row['PATH_ARQUIVO']))
-	# inv = inverse_index()
-	# dicionario_teste = inv.dicionario_invertido_id_texto(paths,path_to_files=True)
-	# pickle.dump(dicionario_teste,open('indice_invertido.pickle','wb'))
-
-	# BUSCA POR PALAVRAS
-	# inv = inverse_index()
-	# dados = inv.encontra_doc_palavra(pickle.load(open('indice_invertido.pickle','rb')),r'investigado')
-	# print(dados)
-
 if __name__ == '__main__':
-	main('indexação_arquivos_teste.csv')
+	inv = inverse_index()
+	print(inv.encontra_doc_palavra(sys.argv[1]))
