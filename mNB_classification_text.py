@@ -1,19 +1,27 @@
+from pdf_to_text import pdf_to_text
+from recursive_folders import recursive_folders
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import MultinomialNB
 from stopwords_pt import stopwords_pt
-import numpy, pandas as pd, nltk
-# nltk.download('rslp')
+import numpy, pandas as pd, nltk, sys, pickle
 
 class mNB_classification_text():
 	"""Class to help classify texts with scikit"""
-	def __init__(self,dados,target_class=None):
+	def __init__(self,dados,target_class=None,classifier_model=False):
 		self.dados = dados
-		self.dataframe = self.dataframe_data(target_class = target_class)
-		self.count_vectorizer = CountVectorizer(analyzer=self.stemmer)
-		self.word_counts = self.count_words()
-		self.targets = self.dataframe['class'].values
-		self.classifier = self.mNB_classifier()
+		if not classifier_model:
+			self.dataframe = self.dataframe_data(target_class = target_class)
+			self.count_vectorizer = CountVectorizer(analyzer=self.stemmer)
+			self.word_counts = self.count_words()
+			self.targets = self.dataframe['class'].values
+			self.classifier = self.mNB_classifier()
+		else:
+			self.dataframe = ''
+			self.count_vectorizer = CountVectorizer(analyzer=self.stemmer)
+			self.word_counts = self.count_words()
+			self.targets = ''
+			self.classifier = classifier_model
 
 	def count_words(self):
 		word_counts = self.count_vectorizer.fit_transform(self.dataframe['text'].values)
@@ -67,11 +75,15 @@ class mNB_classification_text():
 		return scores
 
 if __name__ == '__main__':
-	dados = [('s ssss','s'),('bbb bb','b'),('bbb bb','b'),('sss ss','s'),('sssss ssssssss','s'),('s ssss','s'),('bbb bb','b'),('bbb bb','b'),('sss ss','s'),('sssss ssssssss','s'),('s ssss','s'),('bbb bb','b'),('bbb bb','b'),('sss ss','s'),('sssss ssssssss','s'),('s ssss','s'),('bbb bb','b'),('bbb bb','b'),('sss ss','s'),('sssss ssssssss','s')]
-	sck = mNB_classification_text(dados)
-	# examples = [('s s','s'),('bbb','b')]
-	# for e, class_e in examples:
-	# 	print(e,sck.predict_mNB([e]),(sck.predict_mNB([e]) == class_e))
-	examples2 = ['bbb','ss s','bb bb bbb','s s', 'a a a s']
-	print(sck.predict_mNB(examples2, as_dict=True))
-	print(sck.validate_score(cv=8))
+	pdf2txt = pdf_to_text()
+	if sys.argv[1] == 'train':
+		dados = []
+		df = pd.read_csv(sys.argv[2])
+		for index, row in df.iterrows():
+			dados.append((row['texto'],row['classe']))
+		sck = mNB_classification_text(dados)
+		modelo = pickle.dump(sck.mNB_classifier(),open(sys.argv[3],'wb'))
+	elif sys.argv[1] == 'predict':
+		dados = [pdf2txt.convert_Tika(arq) for arq in os.listdir(sys.argv[2])]
+		sck = mNB_classification_text('', classifier_model=pickle.load(open(sys.argv[3],'rb')))
+		print(sck.predict_mNB(dados))
