@@ -1,3 +1,4 @@
+import os
 from tikapp import TikaApp
 import subprocess
 

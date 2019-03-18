@@ -30,8 +30,11 @@ class parse_emails():
 		df = pd.read_excel(self.nome_relatorio)
 		lista_emails_transacoes = []
 		for index, row in df.iterrows():
-			if re.search(r'comprovante.{1,10}transa',row['corpo'],flags=re.I|re.DOTALL):
-				lista_emails_transacoes.append(row['data_envio']+'_'+row['nome_email'])
+			try:
+				if re.search(r'comprovante.{1,10}transa',row['corpo'],flags=re.I|re.DOTALL):
+					lista_emails_transacoes.append(row['data_envio']+'_'+row['nome_email'])
+			except Exception as e:
+                        	print(e)
 		return lista_emails_transacoes
 
 	def email_contacts(self):
@@ -50,9 +53,10 @@ class parse_emails():
 		return list(df['assunto_limpo'].unique())
 
 	def email_to_excel(self):
-		lista_emails = [i for i in self.paths_to_emails(self.filepath) if i[-4:] == '.msg']
+		lista_emails = [i for i in self.paths_to_emails() if i[-4:] == '.msg']
 		rows = []
 		for msg in lista_emails:
+			print(f'Processando {msg}')
 			body_e, date_e, from_e, recipient_e, subject_e, subject_e_clean, attachments = self.parse_msg(msg)
 			if body_e != '':
 				dicionario_aux = {
@@ -113,8 +117,8 @@ class parse_emails():
 		except Exception as e:
 			print(e)
 
-	def parse_msg(self):
-		mail = mailparser.parse_from_file(self.filepath)
+	def parse_msg(self, msg):
+		mail = mailparser.parse_from_file(msg)
 		soup = BeautifulSoup(mail.body,'html.parser')
 		for script in soup(["script", "style"]):
 			script.extract()
@@ -127,9 +131,9 @@ class parse_emails():
 		anexos_nomes = []
 		if date_e:
 			date_e = date_e.strftime("%d/%m/%Y")
-		nome_pasta = self.filepath[:-4]
+		nome_pasta = msg[:-4]
 		subprocess.Popen('mkdir "%s"' % (nome_pasta,), shell=True)
-		self.email_to_html(mail.body, self.filepath, nome_pasta)
+		#self.email_to_html(mail.body, self.filepath, nome_pasta)
 		if len(mail.attachments):
 			for att in mail.attachments:
 				anexos_nomes.append(att['filename'])

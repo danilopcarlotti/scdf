@@ -38,7 +38,15 @@ def mount_files_windows(filepaths, path_inicial):
 		except Exception as e:
 			print(e)
 
-def processar_arquivo_texto(filepaths):
+def processar_arquivo_texto(filepaths, path_palavras_interesses):
+	mascaras = {
+		'RG' : r'\d{1,2}\.\d{6}\-\w|\d{1,2}\.\d{3}\.\d{3}\-\w',
+		'CPF' : r'\d{3}\.\d{3}\.\d{3}\-\d{2}',
+		'Email' : r'[^@]+@[^@]+\.[^@\s\.]+',
+		'Telefone' : r'[\s\.\,]\d{8,9}[\s\.\,]|[\s\.\,]\d{4,5}[\-\.\s]\d{4}[\s\.\,]',
+		'Data' : r'\d{2}[\./\\]\d{2}[\./\\]\d{4}'
+	}
+	rows = []
 	for filepath in filepaths:
 		if filepath[-4:] == 'docx' or filepath[-3:] == 'pdf' or filepath[-3:] == 'doc':
 			try:
@@ -46,11 +54,17 @@ def processar_arquivo_texto(filepaths):
 				arq = open(filepath.replace('.docx','.txt').replace('.pdf','.txt').replace('.doc','.txt'),'w')
 				arq.write(texto)
 				arq.close()
+				for nome_r, reg in mascaras.items():
+					lista_regex = re.findall(reg,texto)
+					for l in lista_regex:
+						rows.append({'arquivo':filepath,'tipo_expressão':nome_r,'resultado_encontrado':l})
 			except Exception as e:
 				print('Erro em processar arquivo ',filepath)
+	ps = pd.DataFrame(rows,[i for i in range(len(rows))])
+	ps.to_csv(path_palavras_interesses,index=False)
 
-def processar_email(filepaths, id_inv):
-	PARSER_EMAILS = parse_emails(filepaths, id_inv)
+def processar_emails(filepath, id_inv):
+	PARSER_EMAILS = parse_emails(filepath, id_inv)
 	PARSER_EMAILS.email_to_excel()
 	PARSER_EMAILS.relatorio_geral()
 
@@ -61,7 +75,17 @@ def topic_modelling(filepath,path_inicial):
 		if row['TIPO_ARQUIVO'] == 'txt':
 			paths.append(row['PATH_ARQUIVO'])
 	if len(paths):
-		texts = [''.join([line for line in open(p,'r')]) for p in paths]
+		texts = '';
+		for p in paths:
+			print(f"Text modelling {p}")
+			## Include use of chardet here
+			try:
+				for line in open(p, 'r'):
+					texts = texts + ' ' + line
+			except Exception as e:
+				print(str(e))
+		
+		#texts = [''.join([line for line in open(p,'r')]) for p in paths]
 		topicM = topicModelling()
 		topicos = topicM.lda_Model(texts, num_topics=10, npasses=10, num_words=20)
 		topicM.topic_to_txt(topicos,prefix=path_inicial)
@@ -105,11 +129,12 @@ if __name__ == '__main__':
 	unzip_files(arquivos_descompactar)
 
 	# PROCESSAR EMAILS
-	processar_email([i for i in RECURSIVE_CLASS.find_files(path_inicial) if i[-3:] == 'msg'], id_inv)
-	
+	#processar_email([i for i in RECURSIVE_CLASS.find_files(path_inicial) if i[-3:] == 'msg'], id_inv)
+	processar_emails(path_inicial, id_inv)
+
 	# PROCESSAR OS PDF'S E ARQUIVOS DE WORD
-	processar_arquivo_texto(RECURSIVE_CLASS.find_files(path_inicial))
-	
+	processar_arquivo_texto(RECURSIVE_CLASS.find_files(path_inicial),path_inicial+'palavras_interesse_investigacao_'+str(id_inv)+'.csv')
+
 	# GERAR TABELA COM OS ARQUIVOS
 	indice_arquivos([i for i in RECURSIVE_CLASS.find_files(path_inicial) if i[-6:] != 'pickle' and i[-3:] != 'bin'], id_inv, path_inicial)
 	
