@@ -38,7 +38,15 @@ def mount_files_windows(filepaths, path_inicial):
 		except Exception as e:
 			print(e)
 
-def processar_arquivo_texto(filepaths):
+def processar_arquivo_texto(filepaths, path_palavras_interesses):
+	mascaras = {
+		'RG' : r'\d{1,2}\.\d{6}\-\w|\d{1,2}\.\d{3}\.\d{3}\-\w',
+		'CPF' : r'\d{3}\.\d{3}\.\d{3}\-\d{2}',
+		'Email' : r'[^@]+@[^@]+\.[^@\s\.]+',
+		'Telefone' : r'[\s\.\,]\d{8,9}[\s\.\,]|[\s\.\,]\d{4,5}[\-\.\s]\d{4}[\s\.\,]',
+		'Data' : r'\d{2}[\./\\]\d{2}[\./\\]\d{4}'
+	}
+	rows = []
 	for filepath in filepaths:
 		if filepath[-4:] == 'docx' or filepath[-3:] == 'pdf' or filepath[-3:] == 'doc':
 			try:
@@ -46,8 +54,14 @@ def processar_arquivo_texto(filepaths):
 				arq = open(filepath.replace('.docx','.txt').replace('.pdf','.txt').replace('.doc','.txt'),'w')
 				arq.write(texto)
 				arq.close()
+				for nome_r, reg in mascaras.items():
+					lista_regex = re.findall(reg,texto)
+					for l in lista_regex:
+						rows.append({'arquivo':filepath,'tipo_expressão':nome_r,'resultado_encontrado':l})
 			except Exception as e:
 				print('Erro em processar arquivo ',filepath)
+	pd.DataFrame(rows,[i for i in range(len(rows))])
+	pd.to_csv(path_palavras_interesses,index=False)
 
 def processar_email(filepaths, id_inv):
 	PARSER_EMAILS = parse_emails(filepaths, id_inv)
@@ -108,8 +122,8 @@ if __name__ == '__main__':
 	processar_email([i for i in RECURSIVE_CLASS.find_files(path_inicial) if i[-3:] == 'msg'], id_inv)
 	
 	# PROCESSAR OS PDF'S E ARQUIVOS DE WORD
-	processar_arquivo_texto(RECURSIVE_CLASS.find_files(path_inicial))
-	
+	processar_arquivo_texto(RECURSIVE_CLASS.find_files(path_inicial),path_inicial+'palavras_interesse_investigacao_'+str(id_inv)+'.csv')
+
 	# GERAR TABELA COM OS ARQUIVOS
 	indice_arquivos([i for i in RECURSIVE_CLASS.find_files(path_inicial) if i[-6:] != 'pickle' and i[-3:] != 'bin'], id_inv, path_inicial)
 	
