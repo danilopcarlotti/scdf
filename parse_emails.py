@@ -13,6 +13,8 @@ class parse_emails():
 		self.filepath = filepath
 		self.id_inv = id_inv
 		self.nome_relatorio = 'relatório_emails_investigacao_%s.xlsx' % (str(self.id_inv),)
+		self.nome_pasta = self.filepath[:-1]+'_inv_'+str(self.id_inv)
+		subprocess.Popen('mkdir "%s"' % (self.nome_pasta,), shell=True)
 		self.graph = None
 		self.words_of_interest = ['urgente','comprovante','extrato','cuidado']
 	
@@ -53,7 +55,7 @@ class parse_emails():
 		return list(df['assunto_limpo'].unique())
 
 	def email_to_excel(self):
-		lista_emails = [i for i in self.paths_to_emails(self.filepath) if i[-4:] == '.msg']
+		lista_emails = [i for i in self.paths_to_emails() if i[-4:] == '.msg']
 		rows = []
 		for msg in lista_emails:
 			body_e, date_e, from_e, recipient_e, subject_e, subject_e_clean, attachments = self.parse_msg(msg)
@@ -99,25 +101,24 @@ class parse_emails():
 				self.graph.add_edge(row['remetente_email'], row['destinatário_email'], weight=1, dates=[row['data_envio']], subjects=[row['assunto_limpo']])
 				print(type(row['data_envio']))
 
-	def email_to_html(self,html_source, nome_pasta):
+	def email_to_html(self,html_source):
 		try:
-			arq_html = open(self.filepath.split('/')[-1].replace('.msg','.html'),'w')
+			arq_html = open(html_source.split('/')[-1].replace('.msg','.html'),'w')
 			arq_html.write(html_source)
-			subprocess.Popen('mv "%s" %s' % (self.filepath.split('/')[-1].replace('.msg','.html'),nome_pasta), shell=True) 
+			subprocess.Popen('mv "%s" %s' % (html_source.split('/')[-1].replace('.msg','.html'),self.nome_pasta), shell=True) 
 		except Exception as e:
 			print(e)
 
 	def email_to_pdf(self):
-		nome_pasta = self.filepath.split('/')[-1][:-4]
 		try:
 			subprocess.Popen('python3 email2pdf -i "%s" -o "%s" --no-attachments --input-encoding latin_1' % (self.filepath,self.filepath.split('/')[-1].replace('.msg','.pdf')), shell=True) 
 			time.sleep(1)
-			subprocess.Popen('mv "%s" %s' % (self.filepath.split('/')[-1].replace('.msg','.pdf'),nome_pasta), shell=True) 
+			subprocess.Popen('mv "%s" %s' % (self.filepath.split('/')[-1].replace('.msg','.pdf'),self.nome_pasta), shell=True) 
 		except Exception as e:
 			print(e)
 
-	def parse_msg(self):
-		mail = mailparser.parse_from_file(self.filepath)
+	def parse_msg(self, msg):
+		mail = mailparser.parse_from_file(msg)
 		soup = BeautifulSoup(mail.body,'html.parser')
 		for script in soup(["script", "style"]):
 			script.extract()
@@ -130,9 +131,7 @@ class parse_emails():
 		anexos_nomes = []
 		if date_e:
 			date_e = date_e.strftime("%d/%m/%Y")
-		nome_pasta = self.filepath[:-4]
-		subprocess.Popen('mkdir "%s"' % (nome_pasta,), shell=True)
-		self.email_to_html(mail.body, self.filepath, nome_pasta)
+		self.email_to_html(msg)
 		if len(mail.attachments):
 			for att in mail.attachments:
 				anexos_nomes.append(att['filename'])
@@ -141,7 +140,7 @@ class parse_emails():
 						f.write(base64.b64decode(att['payload']))
 					except: 
 						pass
-				subprocess.Popen('mv "%s" "%s"' % (att['filename'],nome_pasta), shell=True) 
+				subprocess.Popen('mv "%s" "%s"' % (att['filename'],self.nome_pasta), shell=True) 
 		return (body_e, date_e, from_e, recipient_e, subject_e, subject_e_clean, anexos_nomes)
 
 	def paths_to_emails(self):
@@ -227,6 +226,8 @@ def main(filepath, id_inv):
 	p.email_to_excel()
 	p.docs_to_txt()
 	p.relatorio_geral()
+	p.topics()
+	p.word_to_vec_textos()
 
 if __name__ == '__main__':
 	filepath = sys.argv[1]
