@@ -60,8 +60,8 @@ def processar_arquivo_texto(filepaths, path_palavras_interesses):
 						rows.append({'arquivo':filepath,'tipo_expressão':nome_r,'resultado_encontrado':l})
 			except Exception as e:
 				print('Erro em processar arquivo ',filepath)
-	pd.DataFrame(rows,[i for i in range(len(rows))])
-	pd.to_csv(path_palavras_interesses,index=False)
+	ps = pd.DataFrame(rows,[i for i in range(len(rows))])
+	ps.to_csv(path_palavras_interesses,index=False)
 
 def processar_email(filepaths, id_inv):
 	PARSER_EMAILS = parse_emails(filepaths, id_inv)
@@ -75,7 +75,15 @@ def topic_modelling(filepath,path_inicial):
 		if row['TIPO_ARQUIVO'] == 'txt':
 			paths.append(row['PATH_ARQUIVO'])
 	if len(paths):
-		texts = [''.join([line for line in open(p,'r')]) for p in paths]
+		texts = []
+		for p in paths:
+			try:
+				text = ''
+				for line in open(p,'r'):
+					text += line
+				texts.append(text)
+			except Exception as e:
+				print(e)
 		topicM = topicModelling()
 		topicos = topicM.lda_Model(texts, num_topics=10, npasses=10, num_words=20)
 		topicM.topic_to_txt(topicos,prefix=path_inicial)

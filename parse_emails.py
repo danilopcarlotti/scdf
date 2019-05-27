@@ -30,8 +30,11 @@ class parse_emails():
 		df = pd.read_excel(self.nome_relatorio)
 		lista_emails_transacoes = []
 		for index, row in df.iterrows():
-			if re.search(r'comprovante.{1,10}transa',row['corpo'],flags=re.I|re.DOTALL):
-				lista_emails_transacoes.append(row['data_envio']+'_'+row['nome_email'])
+			try:
+				if re.search(r'comprovante.{1,10}transa',row['corpo'],flags=re.I|re.DOTALL):
+					lista_emails_transacoes.append(row['data_envio']+'_'+row['nome_email'])
+			except Exception as e:
+				print(e)
 		return lista_emails_transacoes
 
 	def email_contacts(self):
