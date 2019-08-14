@@ -9,7 +9,7 @@ import sys, os, mailparser, base64, re, pandas as pd, subprocess, networkx as nx
 class parse_emails():
 	"""Classe para processamento de emails"""
 	def __init__(self, filepath, id_inv):
-		self.bank_words = ['caixa','banco','itaú']
+		self.bank_words = ['caixa','banco','itaú','bradesco','santander']
 		self.filepath = filepath
 		self.id_inv = id_inv
 		self.nome_relatorio = 'relatório_emails_investigacao_%s.xlsx' % (str(self.id_inv),)
@@ -99,7 +99,7 @@ class parse_emails():
 				self.graph[row['remetente_email']][row['destinatário_email']]['subjects'].append(row['assunto_limpo'])
 			else:
 				self.graph.add_edge(row['remetente_email'], row['destinatário_email'], weight=1, dates=[row['data_envio']], subjects=[row['assunto_limpo']])
-				print(type(row['data_envio']))
+				# print(type(row['data_envio']))
 
 	def email_to_html(self,html_source):
 		try:
@@ -107,7 +107,8 @@ class parse_emails():
 			arq_html.write(html_source)
 			subprocess.Popen('mv "%s" %s' % (html_source.split('/')[-1].replace('.msg','.html'),self.nome_pasta), shell=True) 
 		except Exception as e:
-			print(e)
+			# print(e)
+			pass
 
 	def email_to_pdf(self):
 		try:
@@ -115,7 +116,8 @@ class parse_emails():
 			time.sleep(1)
 			subprocess.Popen('mv "%s" %s' % (self.filepath.split('/')[-1].replace('.msg','.pdf'),self.nome_pasta), shell=True) 
 		except Exception as e:
-			print(e)
+			# print(e)
+			pass
 
 	def parse_msg(self, msg):
 		mail = mailparser.parse_from_file(msg)
