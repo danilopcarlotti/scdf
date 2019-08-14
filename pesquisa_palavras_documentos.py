@@ -1,14 +1,19 @@
 from index_files import index_files
 from parse_emails import parse_emails
+from pymongo import MongoClient
+from remove_accents import remove_accents
+from pdf_to_text import pdf_to_text
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
 
-import os, pickle
+import os, pickle, pymongo
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        self.myclient = MongoClient('mongodb://localhost:27017/')
+        self.pdf2txt = pdf_to_text()
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(888, 597)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -88,12 +93,39 @@ class Ui_MainWindow(object):
         self.listWid.clear()
         word = self.lineEdit_2.text().lower()
         self.lineEdit_2.clear()
-        id_inv = str(self.id_investigacao)
-        if word in self.dicionario_indice_palavras:
-            for index in self.dicionario_indice_palavras[word]:
+        mydb = self.myclient["SCDF"]
+        mycol = mydb["indice_palavras_documentos"]
+        # id_inv = str(self.id_investigacao)
+        # if word in self.dicionario_indice_palavras:
+        #     for index in self.dicionario_indice_palavras[word]:
+        #         self.listWid.addItem(self.dicionario_indice_arquivos[index])
+        word_db = mycol.find_one({'_id':word})
+        if word_db:
+            for doc in word_db['documents']:
                 self.listWid.addItem(self.dicionario_indice_arquivos[index])
 
+    def insert_words(self, texto, file):
+        palavras = list(set([remove_accents(w.strip()).lower() for w in texto.split() if (len(w) > 3 and not w.isnumeric())]))
+        for p in palavras:
+            try:
+                if mycol.find_one({'_id':p}):
+                    mycol.update_one({'_id':p},{'$push':
+                        {
+                            'documents':file
+                        }
+                    })
+                else:
+                    mycol.insert_one({
+                        '_id':p,
+                        'documents':[file]
+                    })
+            except:
+                pass
+        return True
+
     def process_files(self):
+        mydb = self.myclient["SCDF"]
+        mycol = mydb["indice_palavras_documentos"]
         id_inv = str(self.id_investigacao)
         filepath_class = QtWidgets.QFileDialog()
         filepaths = filepath_class.getExistingDirectory(filepath_class, "Select Directory")
@@ -101,9 +133,14 @@ class Ui_MainWindow(object):
         PARSER_EMAILS.email_to_excel()
         PARSER_EMAILS.relatorio_geral()
         i = index_files(filepaths)
-        i.save_paths_file('indice_arquivos_investigacao_'+id_inv, id_inv, excel_file=True)
-        self.dicionario_indice_arquivos = pickle.load(open('dicionario_indice_arquivos_%s.pickle' % id_inv,'rb'))
-        self.dicionario_indice_palavras = pickle.load(open('dicionario_indice_palavras_%s.pickle' % id_inv,'rb'))
+        # i.save_paths_file('indice_arquivos_investigacao_'+id_inv, id_inv, excel_file=True)
+        # self.dicionario_indice_arquivos = pickle.load(open('dicionario_indice_arquivos_%s.pickle' % id_inv,'rb'))
+        # self.dicionario_indice_palavras = pickle.load(open('dicionario_indice_palavras_%s.pickle' % id_inv,'rb'))
+        for f in i:
+            try:
+                self.insert_words(self.pdf2txt.convert_Tika(open(f,'r')),f)
+            except:
+                pass
         msg = QMessageBox()
         msg.about(msg, "Sucesso!", "Você processou os arquivos da investigação:\n"+ str(self.id_investigacao))
 
