@@ -51,26 +51,10 @@ class index_files():
 			df.to_csv(name_file+'.csv',index=False)
 		elif excel_file:
 			df.to_excel(name_file+'.xlsx',index=False)
-		dicionario_indice_arquivos = {}
-		dicionario_indice_palavras = {}
-		pdf2txt = pdf_to_text()
-		stopwords = nltk.corpus.stopwords.words('portuguese')
-		for index, row in df.iterrows():
-			if row['TIPO_ARQUIVO'] in ['docx','doc','pdf','txt']:
-				text = re.sub(r'\s+',' ',pdf2txt.convert_Tika(row['PATH_ARQUIVO']))
-				list_words = list(set([w.strip().lower() for w in text.split(' ') if not (len(w) < 3 or w.isnumeric() or w in stopwords)]))
-				for lw in list_words:
-					if lw not in dicionario_indice_palavras:
-						dicionario_indice_palavras[lw] = []
-					dicionario_indice_palavras[lw].append(row['ID'])
-				dicionario_indice_arquivos[row['ID']] = row['PATH_ARQUIVO']
-		print(dicionario_indice_palavras)
-		pickle.dump(dicionario_indice_arquivos,open('dicionario_indice_arquivos_%s.pickle' % (id_inv,),'wb'))
-		pickle.dump(dicionario_indice_palavras, open('dicionario_indice_palavras_%s.pickle' % (id_inv,),'wb'))
 
 def main(files_path, id_inv):
 	i = index_files(files_path)
-	i.save_paths_file('indexação_arquivos_%s' % (str(id_inv),), id_inv, csv_file=True)
+	i.save_paths_file('indexação_arquivos_%s' % (str(id_inv),), id_inv, excel_file=True)
 
 if __name__ == '__main__':
 	main(sys.argv[1],sys.argv[2])

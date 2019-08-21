@@ -3,17 +3,21 @@ from parse_emails import parse_emails
 from pymongo import MongoClient
 from remove_accents import remove_accents
 from pdf_to_text import pdf_to_text
+from mongo_url import mongo_url
+import os, pickle, pymongo
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
 
-import os, pickle, pymongo
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        self.myclient = MongoClient('mongodb://localhost:27017/')
+        self.myclient = MongoClient(mongo_url)
+        self.mydb = None
         self.pdf2txt = pdf_to_text()
+        self.id_investigacao = 'nao_informado'
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(888, 597)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -66,7 +70,6 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
-        self.id_investigacao = 'nao_informado'
         self.pushButton.clicked.connect(self.process_files)
         self.pushButton_2.clicked.connect(self.id_inv)
         self.pushButton_3.clicked.connect(self.search_word)
@@ -93,12 +96,7 @@ class Ui_MainWindow(object):
         self.listWid.clear()
         word = self.lineEdit_2.text().lower()
         self.lineEdit_2.clear()
-        mydb = self.myclient["SCDF"]
-        mycol = mydb["indice_palavras_documentos"]
-        # id_inv = str(self.id_investigacao)
-        # if word in self.dicionario_indice_palavras:
-        #     for index in self.dicionario_indice_palavras[word]:
-        #         self.listWid.addItem(self.dicionario_indice_arquivos[index])
+        mycol = self.mydb["indice_palavras_documentos_"+str(self.id_investigacao)]
         word_db = mycol.find_one({'_id':word})
         if word_db:
             for doc in word_db['documents']:
@@ -124,21 +122,18 @@ class Ui_MainWindow(object):
         return True
 
     def process_files(self):
-        mydb = self.myclient["SCDF"]
-        mycol = mydb["indice_palavras_documentos"]
         id_inv = str(self.id_investigacao)
+        mycol = self.mydb["indice_palavras_documentos_"+id_inv]
         filepath_class = QtWidgets.QFileDialog()
         filepaths = filepath_class.getExistingDirectory(filepath_class, "Select Directory")
         PARSER_EMAILS = parse_emails(filepaths, id_inv)
         PARSER_EMAILS.email_to_excel()
         PARSER_EMAILS.relatorio_geral()
         i = index_files(filepaths)
-        # i.save_paths_file('indice_arquivos_investigacao_'+id_inv, id_inv, excel_file=True)
-        # self.dicionario_indice_arquivos = pickle.load(open('dicionario_indice_arquivos_%s.pickle' % id_inv,'rb'))
-        # self.dicionario_indice_palavras = pickle.load(open('dicionario_indice_palavras_%s.pickle' % id_inv,'rb'))
+        i.save_paths_file('indice_arquivos_investigacao_'+id_inv, id_inv, excel_file=True)
         for f in i:
             try:
-                self.insert_words(self.pdf2txt.convert_Tika(open(f,'r')),f)
+                self.insert_words(self.pdf2txt.convert_Tika(open(f,'r')),f.split('/')[-1])
             except:
                 pass
         msg = QMessageBox()
@@ -147,12 +142,7 @@ class Ui_MainWindow(object):
     def id_inv(self):
         self.id_investigacao = self.lineEdit.text()
         self.lineEdit.clear()
-        try:
-            self.dicionario_indice_arquivos = pickle.load(open('dicionario_indice_arquivos_%s.pickle' % self.id_investigacao,'rb'))
-            self.dicionario_indice_palavras = pickle.load(open('dicionario_indice_palavras_%s.pickle' % self.id_investigacao,'rb'))
-        except:
-            self.dicionario_indice_arquivos = None
-            self.dicionario_indice_palavras = None
+        self.mydb = self.myclient["SCDF_"+id_inv]
         msg = QMessageBox()
         msg.about(msg, "Sucesso!", "Você selecionou a investigação:\n"+ str(self.id_investigacao))
 

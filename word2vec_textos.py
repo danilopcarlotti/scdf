@@ -40,7 +40,5 @@ def main():
 	pass
 
 if __name__ == '__main__':
-	# from recursive_folders import recursive_folders
-	
 	w = word2vec_textos()
 	print(w.pesquisar_palavra(sys.argv[1]))

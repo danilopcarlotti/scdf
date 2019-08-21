@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>888</width>
-    <height>597</height>
+    <width>1165</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,10 @@
    <widget class="QTextBrowser" name="textBrowser">
     <property name="geometry">
      <rect>
-      <x>9</x>
-      <y>9</y>
-      <width>861</width>
-      <height>91</height>
+      <x>10</x>
+      <y>0</y>
+      <width>931</width>
+      <height>101</height>
      </rect>
     </property>
     <property name="html">
@@ -28,15 +28,16 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Garuda'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Este é o programa que irá processar todos os arquivos e prepará-los para pesquisa por palavras-chave&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Solução em ciência de dados forenses 1.0&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Unidade de Inteligência - Ministério Público do Estado de SP&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>140</y>
-      <width>261</width>
+      <x>10</x>
+      <y>150</y>
+      <width>271</width>
       <height>41</height>
      </rect>
     </property>
@@ -47,9 +48,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>190</y>
-      <width>261</width>
+      <x>10</x>
+      <y>200</y>
+      <width>271</width>
       <height>37</height>
      </rect>
     </property>
@@ -60,8 +61,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QLineEdit" name="lineEdit_2">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>410</y>
+      <x>360</x>
+      <y>160</y>
       <width>271</width>
       <height>41</height>
      </rect>
@@ -73,8 +74,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton_3">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>460</y>
+      <x>360</x>
+      <y>210</y>
       <width>271</width>
       <height>37</height>
      </rect>
@@ -86,7 +87,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QListView" name="listView">
     <property name="geometry">
      <rect>
-      <x>380</x>
+      <x>660</x>
       <y>110</y>
       <width>491</width>
       <height>411</height>
@@ -96,60 +97,121 @@ p, li { white-space: pre-wrap; }
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>100</y>
-      <width>311</width>
-      <height>41</height>
+      <width>271</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="text">
-     <string>1º passo - Insira abaixo o ID da investigação</string>
+     <string>  1º passo. Insira o ID da investigação</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>370</y>
-      <width>311</width>
+      <x>380</x>
+      <y>120</y>
+      <width>231</width>
       <height>29</height>
      </rect>
     </property>
     <property name="text">
-     <string>3º passo - Digite a palavra a ser pesquisada</string>
+     <string>Digite a palavra a ser pesquisada</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>310</y>
-      <width>311</width>
-      <height>37</height>
+      <x>960</x>
+      <y>0</y>
+      <width>181</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Garuda'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;img src=&quot;:/newPrefix/MPSP.png&quot; width=&quot;160&quot; height=&quot;80&quot; /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_4">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>260</y>
+      <width>271</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
-     <string>Selecione pasta de arquivos da investigação</string>
+     <string>Mostrar outras palavras que aparecem
+em contextos similares</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QScrollArea" name="scrollArea">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>240</y>
-      <width>321</width>
-      <height>71</height>
+      <x>10</x>
+      <y>250</y>
+      <width>271</width>
+      <height>281</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <italic>false</italic>
-     </font>
+    <property name="widgetResizable">
+     <bool>true</bool>
     </property>
-    <property name="text">
-     <string>2º passo - Processar arquivos da investigação
-Passo que deve ser feito só uma vez</string>
-    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>269</width>
+       <height>279</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="3" column="0">
+       <widget class="QPushButton" name="pushButton_6">
+        <property name="text">
+         <string>Relatório de bilhetagem</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="pushButton_7">
+        <property name="text">
+         <string>Relatório de tópicos presentes 
+nos documentos</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QPushButton" name="pushButton_8">
+        <property name="text">
+         <string>Relatório de emails</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>                  Relatórios</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="pushButton_9">
+        <property name="text">
+         <string>Índice de documentos
+e emails</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -170,6 +232,8 @@ Passo que deve ser feito só uma vez</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../image_logo.qrc"/>
+ </resources>
  <connections/>
 </ui>
