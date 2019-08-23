@@ -17,7 +17,7 @@ def main(filepaths, id_inv):
 			text_str = re.sub(r'\s+',' ',pdf2txt.convert_Tika(f))
 			texts.append(text_str)
 	model = top_modelling.lda_Model(texts,num_topics=15)
-	top_modelling.topic_to_txt(model,prefix=id_inv)
+	top_modelling.topic_to_txt(model,prefix='investigacao_'+id_inv+'_')
 
 if __name__ == '__main__':
 	main(sys.argv[1],sys.argv[2])

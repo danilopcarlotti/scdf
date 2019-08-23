@@ -23,7 +23,7 @@ class index_files():
 				nome = path.split('/')[-1]
 			else:
 				nome = path
-			rows.append({'NOME_ARQUIVO':nome, 'TIPO_ARQUIVO':self.file_type(path), 'PATH_ARQUIVO':path, 'ID':contador})
+			rows.append({'NOME_ARQUIVO':nome, 'TIPO_ARQUIVO':self.file_type(path)})
 			contador += 1
 		data_frame = pd.DataFrame(rows, index=[i for i in range(len(rows))])
 		return data_frame
@@ -37,7 +37,7 @@ class index_files():
 				nome = path.split('/')[-1]
 			else:
 				nome = path
-			rows.append({'NOME_ARQUIVO':nome, 'TIPO_ARQUIVO':self.file_type(path), 'PATH_ARQUIVO':path, 'ID':contador})
+			rows.append({'NOME_ARQUIVO':nome, 'TIPO_ARQUIVO':self.file_type(path)})
 			contador += 1
 		data_frame = pd.DataFrame(rows, index=[i for i in range(len(rows))])
 		return data_frame

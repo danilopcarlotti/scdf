@@ -176,7 +176,9 @@ class parse_emails():
 		df = df.applymap(lambda x: x.encode('unicode-escape','replace').decode('utf-8') if isinstance(x, str) else x)
 		df.to_excel('relatório_'+nome_entidade+'.xlsx',index=False)
 
-	def relatorio_geral(self, report_name='relatório_geral.txt'):
+	def relatorio_geral(self, report_name=None):
+		if not report_name:
+			report_name='relatório_geral_emails_%s.txt' % (self.id_inv,)
 		try:
 			df = pd.read_excel(self.nome_relatorio)
 		except:
@@ -186,7 +188,7 @@ class parse_emails():
 		names_email = self.email_names()
 		subjects = self.email_subjects()
 		transactions = self.email_bank_transactions()
-		relatorio_txt = open('relatório_geral_%s' % (str(self.id_inv),),'w')
+		relatorio_txt = open('relatório_geral_%s.txt' % (str(self.id_inv),),'w')
 		relatorio_txt.write('Arquivos de emails disponíveis:\n\n\n')
 		for n in names_email:
 			relatorio_txt.write(str(n)+'\n')
@@ -204,7 +206,9 @@ class parse_emails():
 	def text_to_html(self, texto):
 		return texto.replace('\t',4*'&nbsp;').replace('\n','<br/>')
 
-	def topics(self, prefix='wordcloud_topico_'):
+	def topics(self, prefix=None):
+		if not prefix:
+			prefix='wordcloud_topicos_investigacao_%s_topico_' % (self.id_inv,)
 		doc2txt = pdf_to_text()
 		topM = topicModelling()
 		r = recursive_folders()

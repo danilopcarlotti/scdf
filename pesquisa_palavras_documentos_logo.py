@@ -89,6 +89,10 @@ class Ui_MainWindow(object):
         self.pushButton_2.clicked.connect(self.id_inv)
         self.pushButton_3.clicked.connect(self.search_word)
         self.pushButton_4.clicked.connect(self.search_word_vec)
+        self.pushButton_6.clicked.connect(self.msg_button_bilhetagem)
+        self.pushButton_7.clicked.connect(self.msg_button_topicos)
+        self.pushButton_8.clicked.connect(self.msg_button_relatorio_emails)
+        self.pushButton_9.clicked.connect(self.msg_button_indice_arquivos)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -149,6 +153,71 @@ class Ui_MainWindow(object):
         self.mydb = self.myclient["SCDF_"+self.id_investigacao]
         msg = QMessageBox()
         msg.about(msg, "Sucesso!", "Você selecionou a investigação:\n"+ str(self.id_investigacao))
+
+    def msg_button_bilhetagem(self):
+        if self.id_investigacao:
+            msg = QMessageBox()
+            msg.about(msg, "Sucesso!", "Se solicitado, foram gerados dois arquivos.O primei\
+ro deles é um arquivo com extensão '.png'.Este arquivo contém uma visualização de \
+quais são os números que fazem e recebem ligações. O segundo arquivo, cujo nome \
+é relatório_bilhetagem_..._investigacao_%s.txt contém informações sobre:\n\
+1) Círculos de comunicação (números que fazem e recebem ligações entre si;\n\
+2) Lista de todos os números que se falam;\n\
+3) Quantidade de ligações entre os números;\n" % (str(self.id_investigacao),))
+        else:
+            msg = QMessageBox()
+            msg.about(msg, "Alerta!", "Informe o ID da investigação")
+
+    def msg_button_relatorio_emails(self):
+        if self.id_investigacao:
+            msg = QMessageBox()
+            msg.about(msg, "Sucesso!", "Se havia emails entre os dados disponibilizados, foram \
+gerados dois arquivos de relatório. \nO primeiro se denomina relatório_emails_investigacao_%s.xlsx. Este arquivo\
+ contém as seguintes colunas:\n\
+ 1) nome_email: O nome do arquivo;\n\
+ 2) corpo: O texto do email;\n\
+ 3) data_envio: A data em que o email foi enviado;\n\
+ 4) assunto: O assunto ou título do email;\n\
+ 5) assunto_limpo: O assunto sem pedaços iniciais como 'Re:', 'Fwd:', etc;\n\
+ 6) anexos: nome dos arquivos em anexo aos emails;\n\n\
+ O segundo arquivo se denomina relatório_geral_emails_%s.txt. Este arquivo\
+ contém as seguintes informações:\n\
+ 1) Lista de todos os arquivos de email que foram analisados;\n\
+ 2) Assunto dos emails;\n\
+ 3) Contatos que receberam ou enviaram emails;\n\
+ 4) Datas e nomes dos emails que contém transações bancárias;\n\n\
+ Há um terceiro grupo de imagens que foi gerado. Cada imagem desta representa um tópico importante \
+ nos textos dos emails. Cada tópico é um conjunto de palavras encontrado pelo modelo matemático. \
+ Todos os arquivos têm a denominação wordcloud_topicos_investigacao_%s_topico_....png" \
+ % (str(self.id_investigacao),str(self.id_investigacao),str(self.id_investigacao)))
+        else:
+            msg = QMessageBox()
+            msg.about(msg, "Alerta!", "Informe o ID da investigação")
+
+    def msg_button_topicos(self):
+        if self.id_investigacao:
+            msg = QMessageBox()
+            msg.about(msg, "Sucesso!", "Foram gerados quinze arquivos. Todos eles se denominam\
+investigacao_%s_wordcloud_....png. Cada imagem desta representa um tópico importante \
+nos textos dos emails. Cada tópico é um conjunto de palavras encontrado \
+pelo modelo matemático." % (str(self.id_investigacao),))
+        else:
+            msg = QMessageBox()
+            msg.about(msg, "Alerta!", "Informe o ID da investigação")
+
+    def msg_button_indice_arquivos(self):
+        if self.id_investigacao:
+            msg = QMessageBox()
+            msg.about(msg, "Sucesso!", "Foi gerado um arquivo de Excel denominado indexação_arquivos_%s.xlsx\
+ Esse arquivo contém as seguintes colunas:\n\n\
+1) 'NOME_ARQUIVO': o nome do arquivo. Este é o nome que deve ser usado para que o usuário possa encontrar o arquivo \
+desejado em sua máquina;\n\
+2) 'TIPO_ARQUIVO': A extensão do arquivo;\n\
+Con estas informações o usuário pode pesquisar pelo nome do arquivo e também pelo tipo de extensão.\
+" % (str(self.id_investigacao),))
+        else:
+            msg = QMessageBox()
+            msg.about(msg, "Alerta!", "Informe o ID da investigação")
 
 if __name__ == "__main__":
     import sys
