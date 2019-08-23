@@ -36,8 +36,8 @@ def process_files(filepaths, id_inv, pdf2txt, mycol):
     paths = r.find_files(filepaths)
     for f in paths:
         try:
-            insert_words(pdf2txt.convert_Tika(open(f,'r')),f.split('/')[-1])
-        except:
+            insert_words(pdf2txt.convert_Tika(f),str(f).split('/')[-1],mycol)
+        except Exception as e:
             pass
     return True
 
