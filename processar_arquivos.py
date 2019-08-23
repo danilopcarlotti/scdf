@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from remove_accents import remove_accents
 from pdf_to_text import pdf_to_text
 from mongo_url import mongo_url
+from recursive_folders import recursive_folders
 import os, pymongo, sys
 
 def insert_words(texto, file, mycol):
@@ -31,7 +32,9 @@ def process_files(filepaths, id_inv, pdf2txt, mycol):
     PARSER_EMAILS.relatorio_geral()
     i = index_files(filepaths)
     i.save_paths_file('indice_arquivos_investigacao_'+id_inv, id_inv, excel_file=True)
-    for f in filepaths:
+    r = recursive_folders()
+    paths = r.find_files(filepaths)
+    for f in paths:
         try:
             insert_words(pdf2txt.convert_Tika(open(f,'r')),f.split('/')[-1])
         except:
