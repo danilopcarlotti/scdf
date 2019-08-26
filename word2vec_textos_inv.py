@@ -10,7 +10,7 @@ def main(filepaths,id_investigacao):
 	id_inv = str(id_investigacao)
 	myclient = MongoClient(mongo_url)
 	mydb = myclient["SCDF_"+id_inv]
-	mycollection = mydb['vetores_palavras_similares_'+id_inv]
+	mycol = mydb['vetores_palavras_similares_'+id_inv]
 	pdf2txt = pdf_to_text()
 	stpw = stopwords_pt()
 	stopwords = stpw.stopwords()
@@ -23,18 +23,21 @@ def main(filepaths,id_investigacao):
 			texts2vec.append(text_str.lower().split(' '))
 	model2vec = Word2Vec(texts2vec, min_count=1)
 	for word in model2vec.wv.vocab:
-		for sim_word, similarity in sorted(model2vec.most_similar(word,topn=200),key=lambda x: abs(float(x[1])),reverse=True)[0]:
-			if mycol.find_one({'_id':word}):
-				mycol.update_one({'_id':word},{'$set':
-					{
-						sim_word:similarity
-					}
-				})
-			else:
-				mycol.insert_one({
-					'_id':word,
-					sim_word:similarity
-				})
+		if len(word) > 3:
+			for sim_word, similarity in sorted(model2vec.most_similar(word,topn=30),key=lambda x: abs(float(x[1])),reverse=True):
+				sim_word = sim_word.replace('.','')
+				if len(sim_word) > 3:
+					if mycol.find_one({'_id':word}):
+						mycol.update_one({'_id':word},{'$set':
+							{
+								sim_word:similarity
+							}
+						})
+					else:
+						mycol.insert_one({
+							'_id':word,
+							sim_word:similarity
+						})
 
 if __name__ == '__main__':
 	main(sys.argv[1],sys.argv[2])

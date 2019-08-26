@@ -35,9 +35,8 @@ def process_files(filepaths, id_inv, pdf2txt, mycol):
     r = recursive_folders()
     paths = r.find_files(filepaths)
     for f in paths:
-        f = f.replace('/','\\')
         try:
-            insert_words(pdf2txt.convert_Tika(f),str(f).split('\\')[-1],mycol)
+            insert_words(pdf2txt.convert_Tika(f),str(f).split('/')[-1],mycol)
         except Exception as e:
             pass
     return True
