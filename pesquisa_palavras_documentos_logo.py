@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
         word_db = mycol.find_one({'_id':word})
         if word_db:
             for doc in word_db['documents']:
-                self.listWid.addItem(self.dicionario_indice_arquivos[index])
+                self.listWid.addItem(doc)
 
     def search_word_vec(self):
         self.listWid.clear()
@@ -144,8 +144,9 @@ class Ui_MainWindow(object):
         mycol = self.mydb["vetores_palavras_similares_"+str(self.id_investigacao)]
         word_db = mycol.find_one({'_id':word})
         if word_db:
-            for doc in word_db['documents']:
-                self.listWid.addItem(self.dicionario_indice_arquivos[index])
+            for doc in word_db:
+                if doc != '_id':
+                    self.listWid.addItem('"'+doc+'" com índice de similaridade '+str(word_db[doc]))
 
     def id_inv(self):
         self.id_investigacao = self.lineEdit.text()
