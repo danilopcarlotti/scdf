@@ -52,7 +52,7 @@ class inverse_index():
 			tokens = tk.tokenize(texto_bruto)
 			texto_processado = []
 			for tkn in tokens:
-				if not (tkn in stopwords or tkn.isnumeric() or len(tkn) < 3):
+				if not (len(tkn) < 3 or tkn.isnumeric() or tkn in stopwords):
 					texto_processado.append(tkn)
 			normal_texts.append(texto_processado)
 		if one_text:

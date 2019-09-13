@@ -75,17 +75,15 @@ def topic_modelling(filepath,path_inicial):
 		if row['TIPO_ARQUIVO'] == 'txt':
 			paths.append(row['PATH_ARQUIVO'])
 	if len(paths):
-		texts = '';
+		texts = []
 		for p in paths:
-			print(f"Text modelling {p}")
-			## Include use of chardet here
 			try:
-				for line in open(p, 'r'):
-					texts = texts + ' ' + line
+				text = ''
+				for line in open(p,'r'):
+					text += line
+				texts.append(text)
 			except Exception as e:
-				print(str(e))
-		
-		#texts = [''.join([line for line in open(p,'r')]) for p in paths]
+				print(e)
 		topicM = topicModelling()
 		topicos = topicM.lda_Model(texts, num_topics=10, npasses=10, num_words=20)
 		topicM.topic_to_txt(topicos,prefix=path_inicial)

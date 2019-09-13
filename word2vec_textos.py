@@ -34,13 +34,11 @@ class word2vec_textos():
 
 	def pesquisar_palavra(self,palavra,filepath='word2vec_model.bin',topn=30):
 		self.load_model(filepath=filepath)
-		print(sorted(self.modelo.most_similar(palavra,topn=topn),key=lambda x: abs(float(x[1])),reverse=True))
+		return sorted(self.modelo.most_similar(palavra,topn=topn),key=lambda x: abs(float(x[1])),reverse=True)
 
 def main():
 	pass
 
 if __name__ == '__main__':
-	# from recursive_folders import recursive_folders
-	
 	w = word2vec_textos()
-	w.pesquisar_palavra(sys.argv[1])
+	print(w.pesquisar_palavra(sys.argv[1]))

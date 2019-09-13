@@ -1,5 +1,6 @@
 from recursive_folders import recursive_folders
-import pandas as pd, sys
+from pdf_to_text import pdf_to_text
+import pandas as pd, sys, pickle, nltk, re
 
 class index_files():
 
@@ -8,14 +9,21 @@ class index_files():
 		self.recursive = recursive_folders()
 	
 	def file_type(self, file_name):
-		return file_name.split('/')[-1].split('.')[-1]
+		if '/' in file_name:
+				file_name = file_name.split('/')[-1].split('.')[-1]
+		else:
+			file_name = file_name.split('.')[-1]
+		return file_name
 	
 	def list_paths_df(self, paths):
 		rows = []
 		contador = 1
 		for path in paths:
-			nome = path.split('/')[-1]
-			rows.append({'NOME_ARQUIVO':nome, 'TIPO_ARQUIVO':self.file_type(path), 'PATH_ARQUIVO':path, 'ID':contador})
+			if '/' in path:
+				nome = path.split('/')[-1]
+			else:
+				nome = path
+			rows.append({'NOME_ARQUIVO':nome, 'TIPO_ARQUIVO':self.file_type(path)})
 			contador += 1
 		data_frame = pd.DataFrame(rows, index=[i for i in range(len(rows))])
 		return data_frame
@@ -25,27 +33,28 @@ class index_files():
 		rows = []
 		contador = 1
 		for path in paths:
-			nome = path.split('/')[-1]
-			rows.append({'NOME_ARQUIVO':nome, 'TIPO_ARQUIVO':self.file_type(path), 'PATH_ARQUIVO':path, 'ID':contador})
+			if '/' in path:
+				nome = path.split('/')[-1]
+			else:
+				nome = path
+			rows.append({'NOME_ARQUIVO':nome, 'TIPO_ARQUIVO':self.file_type(path)})
 			contador += 1
 		data_frame = pd.DataFrame(rows, index=[i for i in range(len(rows))])
 		return data_frame
 
-	def save_paths_file(self, name_file, list_paths=False, csv_file=False, excel_file=False):
+	def save_paths_file(self, name_file, id_inv, list_paths=False, csv_file=False, excel_file=False):
 		if list_paths:
-			if csv_file:
-				self.list_paths_df(list_paths).to_csv(name_file+'.csv',index=False)
-			elif excel_file:
-				self.list_paths_df(list_paths).to_excel(name_file+'.xlsx',index=False)
+			df = self.list_paths_df(list_paths)
 		else:
-			if csv_file:
-				self.paths_df().to_csv(name_file+'.csv',index=False)
-			elif excel_file:
-				self.paths_df().to_excel(name_file+'.xlsx',index=False)
+			df = self.paths_df()
+		if csv_file:
+			df.to_csv(name_file+'.csv',index=False)
+		elif excel_file:
+			df.to_excel(name_file+'.xlsx',index=False)
 
 def main(files_path, id_inv):
 	i = index_files(files_path)
-	i.save_paths_file('indexação_arquivos_%s' % (str(id_inv),),csv_file=True)
+	i.save_paths_file('indexação_arquivos_%s' % (str(id_inv),), id_inv, excel_file=True)
 
 if __name__ == '__main__':
 	main(sys.argv[1],sys.argv[2])

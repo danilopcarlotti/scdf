@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>MPSP.png</file>
+  </qresource>
+  <qresource prefix="newPrefix"/>
+</RCC>

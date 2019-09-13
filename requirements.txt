@@ -7,3 +7,6 @@ pickle
 numpy
 nltk
 networkx
+mail-parser
+tika-app
+pymongo

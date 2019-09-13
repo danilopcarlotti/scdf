@@ -9,10 +9,12 @@ import sys, os, mailparser, base64, re, pandas as pd, subprocess, networkx as nx
 class parse_emails():
 	"""Classe para processamento de emails"""
 	def __init__(self, filepath, id_inv):
-		self.bank_words = ['caixa','banco','itaú']
+		self.bank_words = ['caixa','banco','itaú','bradesco','santander']
 		self.filepath = filepath
 		self.id_inv = id_inv
 		self.nome_relatorio = 'relatório_emails_investigacao_%s.xlsx' % (str(self.id_inv),)
+		self.nome_pasta = self.filepath[:-1]+'_inv_'+str(self.id_inv)
+		subprocess.Popen('mkdir "%s"' % (self.nome_pasta,), shell=True)
 		self.graph = None
 		self.words_of_interest = ['urgente','comprovante','extrato','cuidado']
 	
@@ -34,7 +36,7 @@ class parse_emails():
 				if re.search(r'comprovante.{1,10}transa',row['corpo'],flags=re.I|re.DOTALL):
 					lista_emails_transacoes.append(row['data_envio']+'_'+row['nome_email'])
 			except Exception as e:
-                        	print(e)
+				print(e)
 		return lista_emails_transacoes
 
 	def email_contacts(self):
@@ -98,24 +100,25 @@ class parse_emails():
 				self.graph[row['remetente_email']][row['destinatário_email']]['subjects'].append(row['assunto_limpo'])
 			else:
 				self.graph.add_edge(row['remetente_email'], row['destinatário_email'], weight=1, dates=[row['data_envio']], subjects=[row['assunto_limpo']])
-				print(type(row['data_envio']))
+				# print(type(row['data_envio']))
 
-	def email_to_html(self,html_source, nome_pasta):
+	def email_to_html(self,html_source):
 		try:
-			arq_html = open(self.filepath.split('/')[-1].replace('.msg','.html'),'w')
+			arq_html = open(html_source.split('/')[-1].replace('.msg','.html'),'w')
 			arq_html.write(html_source)
-			subprocess.Popen('mv "%s" %s' % (self.filepath.split('/')[-1].replace('.msg','.html'),nome_pasta), shell=True) 
+			subprocess.Popen('mv "%s" %s' % (html_source.split('/')[-1].replace('.msg','.html'),self.nome_pasta), shell=True) 
 		except Exception as e:
-			print(e)
+			# print(e)
+			pass
 
 	def email_to_pdf(self):
-		nome_pasta = self.filepath.split('/')[-1][:-4]
 		try:
 			subprocess.Popen('python3 email2pdf -i "%s" -o "%s" --no-attachments --input-encoding latin_1' % (self.filepath,self.filepath.split('/')[-1].replace('.msg','.pdf')), shell=True) 
 			time.sleep(1)
-			subprocess.Popen('mv "%s" %s' % (self.filepath.split('/')[-1].replace('.msg','.pdf'),nome_pasta), shell=True) 
+			subprocess.Popen('mv "%s" %s' % (self.filepath.split('/')[-1].replace('.msg','.pdf'),self.nome_pasta), shell=True) 
 		except Exception as e:
-			print(e)
+			# print(e)
+			pass
 
 	def parse_msg(self, msg):
 		mail = mailparser.parse_from_file(msg)
@@ -131,9 +134,6 @@ class parse_emails():
 		anexos_nomes = []
 		if date_e:
 			date_e = date_e.strftime("%d/%m/%Y")
-		nome_pasta = msg[:-4]
-		subprocess.Popen('mkdir "%s"' % (nome_pasta,), shell=True)
-		#self.email_to_html(mail.body, self.filepath, nome_pasta)
 		if len(mail.attachments):
 			for att in mail.attachments:
 				anexos_nomes.append(att['filename'])
@@ -142,7 +142,7 @@ class parse_emails():
 						f.write(base64.b64decode(att['payload']))
 					except: 
 						pass
-				subprocess.Popen('mv "%s" "%s"' % (att['filename'],nome_pasta), shell=True) 
+				subprocess.Popen('mv "%s" "%s"' % (att['filename'],self.nome_pasta), shell=True) 
 		return (body_e, date_e, from_e, recipient_e, subject_e, subject_e_clean, anexos_nomes)
 
 	def paths_to_emails(self):
@@ -176,7 +176,9 @@ class parse_emails():
 		df = df.applymap(lambda x: x.encode('unicode-escape','replace').decode('utf-8') if isinstance(x, str) else x)
 		df.to_excel('relatório_'+nome_entidade+'.xlsx',index=False)
 
-	def relatorio_geral(self, report_name='relatório_geral.txt'):
+	def relatorio_geral(self, report_name=None):
+		if not report_name:
+			report_name='relatório_geral_emails_%s.txt' % (self.id_inv,)
 		try:
 			df = pd.read_excel(self.nome_relatorio)
 		except:
@@ -186,7 +188,7 @@ class parse_emails():
 		names_email = self.email_names()
 		subjects = self.email_subjects()
 		transactions = self.email_bank_transactions()
-		relatorio_txt = open('relatório_geral_%s' % (str(self.id_inv),),'w')
+		relatorio_txt = open('relatório_geral_%s.txt' % (str(self.id_inv),),'w')
 		relatorio_txt.write('Arquivos de emails disponíveis:\n\n\n')
 		for n in names_email:
 			relatorio_txt.write(str(n)+'\n')
@@ -204,7 +206,9 @@ class parse_emails():
 	def text_to_html(self, texto):
 		return texto.replace('\t',4*'&nbsp;').replace('\n','<br/>')
 
-	def topics(self, prefix='wordcloud_topico_'):
+	def topics(self, prefix=None):
+		if not prefix:
+			prefix='wordcloud_topicos_investigacao_%s_topico_' % (self.id_inv,)
 		doc2txt = pdf_to_text()
 		topM = topicModelling()
 		r = recursive_folders()
@@ -228,6 +232,8 @@ def main(filepath, id_inv):
 	p.email_to_excel()
 	p.docs_to_txt()
 	p.relatorio_geral()
+	p.topics()
+	p.word_to_vec_textos()
 
 if __name__ == '__main__':
 	filepath = sys.argv[1]

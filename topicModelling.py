@@ -1,6 +1,6 @@
 from textNormalization import textNormalization
 from gensim import corpora, models
-import subprocess
+import subprocess, os
 
 class topicModelling(textNormalization):
 	"""Creates topic models for normalized texts"""

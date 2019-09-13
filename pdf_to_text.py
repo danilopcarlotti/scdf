@@ -1,6 +1,6 @@
 import os
 from tikapp import TikaApp
-import subprocess
+import subprocess, os
 
 class pdf_to_text():
     """Converts pdf to text with pdfminer"""
