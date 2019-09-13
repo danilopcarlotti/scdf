@@ -58,6 +58,7 @@ class parse_emails():
 		lista_emails = [i for i in self.paths_to_emails() if i[-4:] == '.msg']
 		rows = []
 		for msg in lista_emails:
+			print(f'Processando {msg}')
 			body_e, date_e, from_e, recipient_e, subject_e, subject_e_clean, attachments = self.parse_msg(msg)
 			if body_e != '':
 				dicionario_aux = {
@@ -133,7 +134,6 @@ class parse_emails():
 		anexos_nomes = []
 		if date_e:
 			date_e = date_e.strftime("%d/%m/%Y")
-		self.email_to_html(msg)
 		if len(mail.attachments):
 			for att in mail.attachments:
 				anexos_nomes.append(att['filename'])

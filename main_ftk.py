@@ -63,8 +63,8 @@ def processar_arquivo_texto(filepaths, path_palavras_interesses):
 	ps = pd.DataFrame(rows,[i for i in range(len(rows))])
 	ps.to_csv(path_palavras_interesses,index=False)
 
-def processar_email(filepaths, id_inv):
-	PARSER_EMAILS = parse_emails(filepaths, id_inv)
+def processar_emails(filepath, id_inv):
+	PARSER_EMAILS = parse_emails(filepath, id_inv)
 	PARSER_EMAILS.email_to_excel()
 	PARSER_EMAILS.relatorio_geral()
 
@@ -127,8 +127,9 @@ if __name__ == '__main__':
 	unzip_files(arquivos_descompactar)
 
 	# PROCESSAR EMAILS
-	processar_email([i for i in RECURSIVE_CLASS.find_files(path_inicial) if i[-3:] == 'msg'], id_inv)
-	
+	#processar_email([i for i in RECURSIVE_CLASS.find_files(path_inicial) if i[-3:] == 'msg'], id_inv)
+	processar_emails(path_inicial, id_inv)
+
 	# PROCESSAR OS PDF'S E ARQUIVOS DE WORD
 	processar_arquivo_texto(RECURSIVE_CLASS.find_files(path_inicial),path_inicial+'palavras_interesse_investigacao_'+str(id_inv)+'.csv')
 
