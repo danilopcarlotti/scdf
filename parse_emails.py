@@ -216,24 +216,12 @@ class parse_emails():
 		topicos = topM.lda_Model(textos, npasses=1, num_words=10)
 		topM.topic_to_img(topicos, prefix=prefix)
 
-	def word_to_vec_textos(self):
-		doc2txt = pdf_to_text()
-		r = recursive_folders()
-		w2v = word2vec_textos()
-		textos = [doc2txt.convert_Tika(t) for t in r.find_files(self.filepath) if t[-4:] == '.txt' or t[-5:] == '.html']
-		df = pd.read_excel(self.nome_relatorio)
-		for index, row in df.iterrows():
-			textos.append(str(row['corpo']))
-		sentencas = [w2v.split_sentences(texto) for texto in textos]
-		w2v.create_model(sentencas)
-
 def main(filepath, id_inv):
 	p = parse_emails(filepath, id_inv)
 	p.email_to_excel()
 	p.docs_to_txt()
 	p.relatorio_geral()
 	p.topics()
-	p.word_to_vec_textos()
 
 if __name__ == '__main__':
 	filepath = sys.argv[1]

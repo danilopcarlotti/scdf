@@ -54,14 +54,14 @@ class networkx_graphs():
 		return list(nx.simple_cycles(self.graph))
 
 	def standard_report(self):
-		nx.draw(nt.graph,edge_color='b')
+		nx.draw(self.graph,edge_color='b')
 		plt.savefig(self.file_path.split('/')[-1][:-5]+'.png')
 		dicionario_resultados = {
 		'Nome do arquivo analisado' : self.file_path.split('/')[-1],
-		'Nós que interagem entre si' : nt.graph.nodes,
-		'Ciclos fechados' : nt.simple_cycles(),
-		'Quantidade de arestas que chegam ou saem dos nós' : nt.degree_edges(),
-		'Quantidade de arestas entre nós' : nt.get_edge_attributes(sorted_tuples=True)
+		'Nós que interagem entre si' : self.graph.nodes,
+		'Ciclos fechados' : self.simple_cycles(),
+		'Quantidade de arestas que chegam ou saem dos nós' : self.degree_edges(),
+		'Quantidade de arestas entre nós' : self.get_edge_attributes(sorted_tuples=True)
 		}
 		return dicionario_resultados
 

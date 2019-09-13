@@ -4,7 +4,7 @@ from pdf_to_text import pdf_to_text
 from stopwords_pt import stopwords_pt
 import sys, re
 
-def main(filepaths, id_inv):
+def main(filepaths, id_inv,num_topics=15):
 	pdf2txt = pdf_to_text()
 	top_modelling = topicModelling()
 	stpw = stopwords_pt()
@@ -16,8 +16,8 @@ def main(filepaths, id_inv):
 		if f.split('.')[-1] in ['docx','doc','pdf','txt','html']:
 			text_str = re.sub(r'\s+',' ',pdf2txt.convert_Tika(f))
 			texts.append(text_str)
-	model = top_modelling.lda_Model(texts,num_topics=15)
+	model = top_modelling.lda_Model(texts,num_topics=num_topics)
 	top_modelling.topic_to_txt(model,prefix='investigacao_'+id_inv+'_')
 
 if __name__ == '__main__':
-	main(sys.argv[1],sys.argv[2])
+	main(sys.argv[1],sys.argv[2],num_topics=2)

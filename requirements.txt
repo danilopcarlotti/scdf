@@ -10,3 +10,5 @@ networkx
 mail-parser
 tika-app
 pymongo
+wordcloud
+Cython
