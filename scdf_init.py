@@ -1,9 +1,7 @@
+from paths_init import *
 from subprocess import check_output
 import uuid, subprocess, re, os
 
-path_arquivos = '/mnt/Dados/Documents/scdf/teste/teste1/'
-path_scdf = '/mnt/Dados/Documents/scdf/'
-path_relatorios = '/mnt/Dados/Documents/scdf/teste/Relatórios/'
 
 try:
 	investigacoes_processadas = [line.strip() for line in open(path_scdf+'investigacoes_processadas.txt','r')]
