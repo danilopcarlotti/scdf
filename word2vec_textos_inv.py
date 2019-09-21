@@ -1,6 +1,7 @@
 from gensim.models import Word2Vec
 from recursive_folders import recursive_folders
 from pdf_to_text import pdf_to_text
+from remove_accents import remove_accents
 from stopwords_pt import stopwords_pt
 from pymongo import MongoClient
 from mongo_url import mongo_url
@@ -25,7 +26,8 @@ def main(filepaths,id_investigacao):
 	for word in model2vec.wv.vocab:
 		if len(word) > 3:
 			for sim_word, similarity in sorted(model2vec.most_similar(word,topn=30),key=lambda x: abs(float(x[1])),reverse=True):
-				sim_word = sim_word.replace('.','')
+				sim_word = remove_accents(sim_word)
+				word = remove_accents(word)
 				if len(sim_word) > 3:
 					if mycol.find_one({'_id':word}):
 						mycol.update_one({'_id':word},{'$set':

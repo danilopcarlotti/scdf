@@ -31,7 +31,7 @@ def mount_files_windows(filepaths, path_inicial):
 	for file in filepaths:
 		try:
 			dir_name = file.split('.')[-1]
-			subprocess.Popen('mkdir %s' % (path_inicial+dir_name,), shell=True)
+			subprocess.Popen('mkdir "%s"' % (path_inicial+dir_name,), shell=True)
 			subprocess.Popen('ewfmount %s %s' % (file,path_inicial+dir_name), shell=True)
 			time.sleep(2)
 			subprocess.Popen('mount %s/ewf1 %s -o ro,loop,show_sys_files,streams_interace=windows' % (path_inicial+dir_name,path_inicial+dir_nameshow_sys_files,), shell=True)

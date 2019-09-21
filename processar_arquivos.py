@@ -26,12 +26,12 @@ def insert_words(texto, file, mycol):
             pass
     return True
 
-def process_files(filepaths, id_inv, pdf2txt, mycol):
-    PARSER_EMAILS = parse_emails(filepaths, id_inv)
+def process_files(filepaths, destination_path, id_inv, pdf2txt, mycol):
+    PARSER_EMAILS = parse_emails(filepaths, id_inv, destination_path)
     PARSER_EMAILS.email_to_excel()
     PARSER_EMAILS.relatorio_geral()
     i = index_files(filepaths)
-    i.save_paths_file('indice_arquivos_investigacao_'+id_inv, id_inv, excel_file=True)
+    i.save_paths_file(destination_path+'indice_arquivos_investigacao_'+id_inv, id_inv, excel_file=True)
     r = recursive_folders()
     paths = r.find_files(filepaths)
     for f in paths:
@@ -41,12 +41,12 @@ def process_files(filepaths, id_inv, pdf2txt, mycol):
             pass
     return True
 
-def main(filepaths,id_inv):
+def main(filepaths,id_inv,destination_path):
     pdf2txt = pdf_to_text()
     myclient = MongoClient(mongo_url)
     mydb = myclient["SCDF_"+id_inv]
     mycol = mydb["indice_palavras_documentos_"+id_inv]
-    process_files(filepaths,id_inv,pdf2txt,mycol)
+    process_files(filepaths,destination_path,id_inv,pdf2txt,mycol)
 
 if __name__ == '__main__':
-    main(sys.argv[1],sys.argv[2])
+    main(sys.argv[1],sys.argv[2],sys.argv[3])

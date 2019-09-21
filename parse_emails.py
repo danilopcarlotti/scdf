@@ -8,13 +8,15 @@ import sys, os, mailparser, base64, re, pandas as pd, subprocess, networkx as nx
 
 class parse_emails():
 	"""Classe para processamento de emails"""
-	def __init__(self, filepath, id_inv):
+	def __init__(self, filepath, id_inv, destination_path):
 		self.bank_words = ['caixa','banco','itaú','bradesco','santander']
 		self.filepath = filepath
+		self.destination_path = destination_path
 		self.id_inv = id_inv
-		self.nome_relatorio = 'relatório_emails_investigacao_%s.xlsx' % (str(self.id_inv),)
-		self.nome_pasta = self.filepath[:-1]+'_inv_'+str(self.id_inv)
-		subprocess.Popen('mkdir "%s"' % (self.nome_pasta,), shell=True)
+		self.nome_relatorio = destination_path+'relatório_emails_investigacao_%s.xlsx' % (str(self.id_inv),)
+		self.nome_pasta = self.filepath.split('/')[-1].replace('.','')+'_inv_'+str(self.id_inv)
+		pasta_emails = 'Emails_%s/' % (id_inv,)
+		subprocess.Popen('mkdir "%s"' % (destination_path+pasta_emails+self.nome_pasta,), shell=True)
 		self.graph = None
 		self.words_of_interest = ['urgente','comprovante','extrato','cuidado']
 	
@@ -174,7 +176,7 @@ class parse_emails():
 		index = [i for i in range(len(rows))]
 		df = pd.DataFrame(rows,index=index)
 		df = df.applymap(lambda x: x.encode('unicode-escape','replace').decode('utf-8') if isinstance(x, str) else x)
-		df.to_excel('relatório_'+nome_entidade+'.xlsx',index=False)
+		df.to_excel(self.destination_path+'relatório_'+nome_entidade+'.xlsx',index=False)
 
 	def relatorio_geral(self, report_name=None):
 		if not report_name:
@@ -188,7 +190,7 @@ class parse_emails():
 		names_email = self.email_names()
 		subjects = self.email_subjects()
 		transactions = self.email_bank_transactions()
-		relatorio_txt = open('relatório_geral_%s.txt' % (str(self.id_inv),),'w')
+		relatorio_txt = open(self.destination_path+'relatório_geral_emails_%s.txt' % (str(self.id_inv),),'w')
 		relatorio_txt.write('Arquivos de emails disponíveis:\n\n\n')
 		for n in names_email:
 			relatorio_txt.write(str(n)+'\n')
@@ -208,12 +210,12 @@ class parse_emails():
 
 	def topics(self, prefix=None):
 		if not prefix:
-			prefix='wordcloud_topicos_investigacao_%s_topico_' % (self.id_inv,)
+			prefix=self.destination_path+'wordcloud_topicos_investigacao_%s_topico_' % (self.id_inv,)
 		doc2txt = pdf_to_text()
 		topM = topicModelling()
 		r = recursive_folders()
-		textos = [doc2txt.convert_Tika(t) for t in r.find_files(self.filepath) if t[-4:] == '.txt' or t[-5:] == '.html']
-		topicos = topM.lda_Model(textos, npasses=1, num_words=10)
+		textos = [doc2txt.convert_Tika(t) for t in r.find_files(self.filepath) if t[-4:] == '.txt' or t[-5:] == '.html' or t[-4:] == '.pdf']
+		topicos = topM.lda_Model(textos, npasses=20, num_words=15)
 		topM.topic_to_img(topicos, prefix=prefix)
 
 def main(filepath, id_inv):
