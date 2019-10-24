@@ -3,6 +3,7 @@ from pdf_to_text import pdf_to_text
 from mongo_url import mongo_url
 from docx import Document
 from paths_init import *
+from functools import reduce
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
