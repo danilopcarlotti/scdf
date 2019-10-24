@@ -1,23 +1,17 @@
-from pymongo import MongoClient
-from pdf_to_text import pdf_to_text
-from mongo_url import mongo_url
-from docx import Document
-from paths_init import *
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'pesquisa_palavras_documentos.ui'
+#
+# Created by: PyQt5 UI code generator 5.13.0
+#
+# WARNING! All changes made in this file will be lost!
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtWidgets import QMessageBox
 
-import image_logo_mp
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-
-        self.myclient = MongoClient(mongo_url)
-        self.mydb = None
-        self.pdf2txt = pdf_to_text()
-        self.id_investigacao = None
-
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1165, 604)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -39,9 +33,9 @@ class Ui_MainWindow(object):
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_3.setGeometry(QtCore.QRect(350, 360, 291, 51))
         self.pushButton_3.setObjectName("pushButton_3")
-        self.listWid = QtWidgets.QListWidget(self.centralwidget)
-        self.listWid.setGeometry(QtCore.QRect(670, 160, 481, 381))
-        self.listWid.setObjectName("listWid")
+        self.listView = QtWidgets.QListView(self.centralwidget)
+        self.listView.setGeometry(QtCore.QRect(670, 160, 481, 381))
+        self.listView.setObjectName("listView")
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(10, 120, 271, 51))
         self.label.setObjectName("label")
@@ -79,9 +73,9 @@ class Ui_MainWindow(object):
         self.pushButton_9.setObjectName("pushButton_9")
         self.gridLayout.addWidget(self.pushButton_9, 1, 0, 1, 1)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.listWid2 = QtWidgets.QListWidget(self.centralwidget)
-        self.listWid2.setGeometry(QtCore.QRect(360, 160, 271, 41))
-        self.listWid2.setObjectName("listWid2")
+        self.listView_2 = QtWidgets.QListView(self.centralwidget)
+        self.listView_2.setGeometry(QtCore.QRect(360, 160, 271, 41))
+        self.listView_2.setObjectName("listView_2")
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
         self.label_4.setGeometry(QtCore.QRect(410, 120, 191, 51))
         self.label_4.setObjectName("label_4")
@@ -102,14 +96,6 @@ class Ui_MainWindow(object):
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.actionSelecionar_pasta = QtWidgets.QAction(MainWindow)
         self.actionSelecionar_pasta.setObjectName("actionSelecionar_pasta")
-
-        self.pushButton_2.clicked.connect(self.id_inv)
-        self.pushButton_3.clicked.connect(self.search_word)
-        self.pushButton_4.clicked.connect(self.search_word_vec)
-        self.pushButton_6.clicked.connect(self.msg_button_bilhetagem)
-        self.pushButton_7.clicked.connect(self.msg_button_topicos)
-        self.pushButton_8.clicked.connect(self.msg_button_relatorio_emails)
-        self.pushButton_9.clicked.connect(self.msg_button_indice_arquivos)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -147,117 +133,8 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", "Palavras encontradas"))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
         self.actionSelecionar_pasta.setText(_translate("MainWindow", "Selecionar pasta"))
-        self.listWid2.addItem('Favor selecionar investigação')
-
-    def search_word(self):
-        word = self.lineEdit_2.text().lower()
-        self.lineEdit_2.clear()
-        mycol = self.mydb["indice_palavras_documentos_"+str(self.id_investigacao)]
-        documentos_resultados = []
-        for w in word.split(' '):
-            doc_res_aux = []
-            word_db = mycol.find_one({'_id':word})
-            if word_db:
-                for doc in word_db['documents']:
-                    doc_res_aux.append(doc)
-            documentos_resultados.append(doc_res_aux)
-        lista_consolidada_documentos = list(reduce(set.intersection, [set(item) for item in documentos_resultados]))
-        self.listWid.clear()
-        msg = QMessageBox()
-        if len(lista_consolidada_documentos):
-            documento_relatorio = Document()
-            for l in lista_consolidada_documentos:
-                self.listWid.addItem(doc)
-                documento_relatorio.add_paragraph(doc+'\n')
-            documento_relatorio.save(path_relatorios+'documentos com palavras '+word+'.docx')
-            msg.about(msg, "Sucesso!", "Foi gerado um relatório, salvo na pasta de relatórios, com os documentos em que a(s) seguinte(s) palavra(s) aparecem: "+word)
-        else:
-            msg.about(msg, "Erro!", 'Expressão não encontrada')
-
-    def search_word_vec(self):
-        self.listWid.clear()
-        word = self.lineEdit_2.text().lower()
-        self.lineEdit_2.clear()
-        mycol = self.mydb["vetores_palavras_similares_"+str(self.id_investigacao)]
-        word_db = mycol.find_one({'_id':word})
-        if word_db:
-            for doc in word_db:
-                if doc != '_id':
-                    self.listWid.addItem('"'+doc+'" com índice de similaridade '+str(word_db[doc]))
-
-    def id_inv(self):
-        self.id_investigacao = self.lineEdit.text()
-        self.lineEdit.clear()
-        self.mydb = self.myclient["SCDF_"+self.id_investigacao]
-        self.listWid2.clear()
-        self.listWid2.addItem(self.id_investigacao)
-        msg = QMessageBox()
-        msg.about(msg, "Sucesso!", "Você selecionou a investigação:\n"+ str(self.id_investigacao))
-
-    def msg_button_bilhetagem(self):
-        if self.id_investigacao:
-            msg = QMessageBox()
-            msg.about(msg, "Sucesso!", "Se solicitado, foram gerados dois arquivos.O primei\
-ro deles é um arquivo com extensão '.png'.Este arquivo contém uma visualização de \
-quais são os números que fazem e recebem ligações. O segundo arquivo, cujo nome \
-é relatório_bilhetagem_..._investigacao_%s.txt contém informações sobre:\n\
-1) Círculos de comunicação (números que fazem e recebem ligações entre si;\n\
-2) Lista de todos os números que se falam;\n\
-3) Quantidade de ligações entre os números;\n" % (str(self.id_investigacao),))
-        else:
-            msg = QMessageBox()
-            msg.about(msg, "Alerta!", "Informe o ID da investigação")
-
-    def msg_button_relatorio_emails(self):
-        if self.id_investigacao:
-            msg = QMessageBox()
-            msg.about(msg, "Sucesso!", "Se havia emails entre os dados disponibilizados, foram \
-gerados dois arquivos de relatório. \nO primeiro se denomina relatório_emails_investigacao_%s.xlsx. Este arquivo\
- contém as seguintes colunas:\n\
- 1) nome_email: O nome do arquivo;\n\
- 2) corpo: O texto do email;\n\
- 3) data_envio: A data em que o email foi enviado;\n\
- 4) assunto: O assunto ou título do email;\n\
- 5) assunto_limpo: O assunto sem pedaços iniciais como 'Re:', 'Fwd:', etc;\n\
- 6) anexos: nome dos arquivos em anexo aos emails;\n\n\
- O segundo arquivo se denomina relatório_geral_emails_%s.txt. Este arquivo\
- contém as seguintes informações:\n\
- 1) Lista de todos os arquivos de email que foram analisados;\n\
- 2) Assunto dos emails;\n\
- 3) Contatos que receberam ou enviaram emails;\n\
- 4) Datas e nomes dos emails que contém transações bancárias;\n\n\
- Há um terceiro grupo de imagens que foi gerado. Cada imagem desta representa um tópico importante \
- nos textos dos emails. Cada tópico é um conjunto de palavras encontrado pelo modelo matemático. \
- Todos os arquivos têm a denominação wordcloud_topicos_investigacao_%s_topico_....png" \
- % (str(self.id_investigacao),str(self.id_investigacao),str(self.id_investigacao)))
-        else:
-            msg = QMessageBox()
-            msg.about(msg, "Alerta!", "Informe o ID da investigação")
-
-    def msg_button_topicos(self):
-        if self.id_investigacao:
-            msg = QMessageBox()
-            msg.about(msg, "Sucesso!", "Foram gerados quinze arquivos. Todos eles se denominam\
-investigacao_%s_wordcloud_....png. Cada imagem desta representa um tópico importante \
-nos textos dos emails. Cada tópico é um conjunto de palavras encontrado \
-pelo modelo matemático." % (str(self.id_investigacao),))
-        else:
-            msg = QMessageBox()
-            msg.about(msg, "Alerta!", "Informe o ID da investigação")
-
-    def msg_button_indice_arquivos(self):
-        if self.id_investigacao:
-            msg = QMessageBox()
-            msg.about(msg, "Sucesso!", "Foi gerado um arquivo de Excel denominado indexação_arquivos_%s.xlsx\
- Esse arquivo contém as seguintes colunas:\n\n\
-1) 'NOME_ARQUIVO': o nome do arquivo. Este é o nome que deve ser usado para que o usuário possa encontrar o arquivo \
-desejado em sua máquina;\n\
-2) 'TIPO_ARQUIVO': A extensão do arquivo;\n\
-Con estas informações o usuário pode pesquisar pelo nome do arquivo e também pelo tipo de extensão.\
-" % (str(self.id_investigacao),))
-        else:
-            msg = QMessageBox()
-            msg.about(msg, "Alerta!", "Informe o ID da investigação")
+import image_logo_mp_rc
+import image_logo_rc
 
 
 if __name__ == "__main__":

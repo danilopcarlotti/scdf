@@ -1,18 +1,15 @@
 from pymongo import MongoClient
 from pdf_to_text import pdf_to_text
 from mongo_url import mongo_url
-from docx import Document
-from paths_init import *
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
 
-import image_logo_mp
+import image_logo
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-
         self.myclient = MongoClient(mongo_url)
         self.mydb = None
         self.pdf2txt = pdf_to_text()
@@ -23,39 +20,39 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
-        self.textBrowser.setGeometry(QtCore.QRect(10, 0, 891, 121))
+        self.textBrowser.setGeometry(QtCore.QRect(10, 0, 931, 101))
         self.textBrowser.setObjectName("textBrowser")
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setGeometry(QtCore.QRect(10, 160, 271, 41))
+        self.lineEdit.setGeometry(QtCore.QRect(10, 150, 271, 41))
         self.lineEdit.setText("")
         self.lineEdit.setObjectName("lineEdit")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(10, 210, 271, 37))
+        self.pushButton_2.setGeometry(QtCore.QRect(10, 200, 271, 37))
         self.pushButton_2.setObjectName("pushButton_2")
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_2.setGeometry(QtCore.QRect(350, 310, 291, 41))
+        self.lineEdit_2.setGeometry(QtCore.QRect(360, 160, 271, 41))
         self.lineEdit_2.setText("")
         self.lineEdit_2.setObjectName("lineEdit_2")
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(350, 360, 291, 51))
+        self.pushButton_3.setGeometry(QtCore.QRect(360, 210, 271, 37))
         self.pushButton_3.setObjectName("pushButton_3")
         self.listWid = QtWidgets.QListWidget(self.centralwidget)
-        self.listWid.setGeometry(QtCore.QRect(670, 160, 481, 381))
+        self.listWid.setGeometry(QtCore.QRect(660, 110, 491, 411))
         self.listWid.setObjectName("listWid")
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(10, 120, 271, 51))
+        self.label.setGeometry(QtCore.QRect(10, 100, 271, 51))
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(380, 270, 231, 29))
+        self.label_2.setGeometry(QtCore.QRect(380, 120, 231, 29))
         self.label_2.setObjectName("label_2")
         self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit.setGeometry(QtCore.QRect(910, 0, 241, 121))
+        self.textEdit.setGeometry(QtCore.QRect(960, 0, 181, 101))
         self.textEdit.setObjectName("textEdit")
         self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_4.setGeometry(QtCore.QRect(350, 420, 291, 61))
+        self.pushButton_4.setGeometry(QtCore.QRect(360, 260, 271, 61))
         self.pushButton_4.setObjectName("pushButton_4")
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
-        self.scrollArea.setGeometry(QtCore.QRect(10, 270, 271, 281))
+        self.scrollArea.setGeometry(QtCore.QRect(10, 250, 271, 281))
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
@@ -79,20 +76,6 @@ class Ui_MainWindow(object):
         self.pushButton_9.setObjectName("pushButton_9")
         self.gridLayout.addWidget(self.pushButton_9, 1, 0, 1, 1)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.listWid2 = QtWidgets.QListWidget(self.centralwidget)
-        self.listWid2.setGeometry(QtCore.QRect(360, 160, 271, 41))
-        self.listWid2.setObjectName("listWid2")
-        self.label_4 = QtWidgets.QLabel(self.centralwidget)
-        self.label_4.setGeometry(QtCore.QRect(410, 120, 191, 51))
-        self.label_4.setObjectName("label_4")
-        self.label_5 = QtWidgets.QLabel(self.centralwidget)
-        self.label_5.setGeometry(QtCore.QRect(850, 120, 151, 51))
-        self.label_5.setObjectName("label_5")
-        self.line = QtWidgets.QFrame(self.centralwidget)
-        self.line.setGeometry(QtCore.QRect(10, 250, 631, 20))
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line.setObjectName("line")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -121,19 +104,17 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Garuda\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt;\">Solução em ciência de dados forenses 1.0</span></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt;\">Ministério Público do Estado de SP</span></p></body></html>"))
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Solução em ciência de dados forenses 1.0</span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Unidade de Inteligência - Ministério Público do Estado de SP</span></p></body></html>"))
         self.pushButton_2.setText(_translate("MainWindow", "Informar ID da investigação"))
-        self.pushButton_3.setText(_translate("MainWindow", "Listar documentos com esta(s) palavra(s)\n"
-"Gerar relatório"))
+        self.pushButton_3.setText(_translate("MainWindow", "Mostrar documentos com esta palavra"))
         self.label.setText(_translate("MainWindow", "  1º passo. Insira o ID da investigação"))
         self.label_2.setText(_translate("MainWindow", "Digite a palavra a ser pesquisada"))
         self.textEdit.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Garuda\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> <img src=\":/newPrefix/MPSPAtivo 5.png\" /></p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> <img src=\":/newPrefix/MPSP.png\" width=\"160\" height=\"80\" /></p></body></html>"))
         self.pushButton_4.setText(_translate("MainWindow", "Mostrar outras palavras que aparecem\n"
 "em contextos similares"))
         self.pushButton_6.setText(_translate("MainWindow", "Relatório de bilhetagem"))
@@ -143,11 +124,8 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "                  Relatórios"))
         self.pushButton_9.setText(_translate("MainWindow", "Índice de documentos\n"
 "e emails"))
-        self.label_4.setText(_translate("MainWindow", "Você está na investigação"))
-        self.label_5.setText(_translate("MainWindow", "Palavras encontradas"))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
         self.actionSelecionar_pasta.setText(_translate("MainWindow", "Selecionar pasta"))
-        self.listWid2.addItem('Favor selecionar investigação')
 
     def search_word(self):
         word = self.lineEdit_2.text().lower()
@@ -189,8 +167,6 @@ class Ui_MainWindow(object):
         self.id_investigacao = self.lineEdit.text()
         self.lineEdit.clear()
         self.mydb = self.myclient["SCDF_"+self.id_investigacao]
-        self.listWid2.clear()
-        self.listWid2.addItem(self.id_investigacao)
         msg = QMessageBox()
         msg.about(msg, "Sucesso!", "Você selecionou a investigação:\n"+ str(self.id_investigacao))
 
@@ -258,7 +234,6 @@ Con estas informações o usuário pode pesquisar pelo nome do arquivo e também
         else:
             msg = QMessageBox()
             msg.about(msg, "Alerta!", "Informe o ID da investigação")
-
 
 if __name__ == "__main__":
     import sys

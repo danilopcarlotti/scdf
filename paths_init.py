@@ -1,3 +1,3 @@
-path_arquivos = ''
+path_arquivos = 'Teste/'
 path_scdf = ''
-path_relatorios = ''
+path_relatorios = 'Teste/'

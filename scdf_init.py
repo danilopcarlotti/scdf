@@ -29,11 +29,11 @@ if not len(investigacoes_a_processar) == len(investigacoes_processadas):
 			arq_id_inv.write('Investigação armazenada na pasta %s recebeu o id: %s\n' % (i, id_inv))
 
 			print('Rodando o modulo de processamento de arquivos')
-			subprocess.call(['python3','%s/processar_arquivos.py' % (path_scdf,), path_arquivos+i, id_inv, path_relatorios])
+			subprocess.call(['python3','%sprocessar_arquivos.py' % (path_scdf,), path_arquivos+i, id_inv, path_relatorios])
 			print('Acabou!\nRodando o modulo de topic modelling')
-			subprocess.call(['python3','%s/topic_modelling_inv.py' % (path_scdf,), path_arquivos+i, id_inv, path_relatorios])
+			subprocess.call(['python3','%stopic_modelling_inv.py' % (path_scdf,), path_arquivos+i, id_inv, path_relatorios])
 			print('Acabou!\nRodando o modulo de word2vec')
-			subprocess.call(['python3','%s/word2vec_textos_inv.py' % (path_scdf,), path_arquivos+i, id_inv])
+			subprocess.call(['python3','%sword2vec_textos_inv.py' % (path_scdf,), path_arquivos+i, id_inv])
 			print('Acabou! registrando a investigacao no arquivo respectivo!')
 
 			arq_inv_processadas = open(path_scdf+'investigacoes_processadas.txt','a')
