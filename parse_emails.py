@@ -4,6 +4,7 @@ from recursive_folders import recursive_folders
 from pdf_to_text import pdf_to_text
 from topicModelling import topicModelling
 from word2vec_textos import word2vec_textos
+from docx import Document
 import sys, os, mailparser, base64, re, pandas as pd, subprocess, networkx as nx, matplotlib.pyplot as plt, datetime, time, argparse
 
 class parse_emails():
@@ -13,10 +14,10 @@ class parse_emails():
 		self.filepath = filepath
 		self.destination_path = destination_path
 		self.id_inv = id_inv
-		self.nome_relatorio = destination_path+'relatório_emails_investigacao_%s.xlsx' % (str(self.id_inv),)
+		self.nome_relatorio = destination_path+'/relatório_emails_investigacao_%s.xlsx' % (str(self.id_inv),)
 		self.nome_pasta = self.filepath.split('/')[-1].replace('.','')+'_inv_'+str(self.id_inv)
-		pasta_emails = 'Emails_%s/' % (id_inv,)
-		subprocess.Popen('mkdir "%s"' % (destination_path+pasta_emails+self.nome_pasta,), shell=True)
+		pasta_emails = 'Emails%s/' % (id_inv,)
+		subprocess.Popen('mkdir "%s"' % (destination_path+'/'+pasta_emails+self.nome_pasta,), shell=True)
 		self.graph = None
 		self.words_of_interest = ['urgente','comprovante','extrato','cuidado']
 	
@@ -110,8 +111,7 @@ class parse_emails():
 			arq_html.write(html_source)
 			subprocess.Popen('mv "%s" %s' % (html_source.split('/')[-1].replace('.msg','.html'),self.nome_pasta), shell=True) 
 		except Exception as e:
-			# print(e)
-			pass
+			print(e)
 
 	def email_to_pdf(self):
 		try:
@@ -119,8 +119,7 @@ class parse_emails():
 			time.sleep(1)
 			subprocess.Popen('mv "%s" %s' % (self.filepath.split('/')[-1].replace('.msg','.pdf'),self.nome_pasta), shell=True) 
 		except Exception as e:
-			# print(e)
-			pass
+			print(e)
 
 	def parse_msg(self, msg):
 		mail = mailparser.parse_from_file(msg)
@@ -178,32 +177,30 @@ class parse_emails():
 		df = df.applymap(lambda x: x.encode('unicode-escape','replace').decode('utf-8') if isinstance(x, str) else x)
 		df.to_excel(self.destination_path+'relatório_'+nome_entidade+'.xlsx',index=False)
 
-	def relatorio_geral(self, report_name=None):
-		if not report_name:
-			report_name='relatório_geral_emails_%s.txt' % (self.id_inv,)
+	def relatorio_geral(self):
 		try:
 			df = pd.read_excel(self.nome_relatorio)
 		except:
 			return
+		doc = Document()
 		df = df.fillna(' ')
 		contacts = self.email_contacts()
 		names_email = self.email_names()
 		subjects = self.email_subjects()
 		transactions = self.email_bank_transactions()
-		relatorio_txt = open(self.destination_path+'relatório_geral_emails_%s.txt' % (str(self.id_inv),),'w')
-		relatorio_txt.write('Arquivos de emails disponíveis:\n\n\n')
+		doc.add_paragraph('Arquivos de emails disponíveis:\n\n\n')
 		for n in names_email:
-			relatorio_txt.write(str(n)+'\n')
-		relatorio_txt.write('\n\nAssuntos dos emails:\n\n\n')
+			doc.add_paragraph(str(n)+'\n')
+		doc.add_paragraph('\n\nAssuntos dos emails:\n\n\n')
 		for s in subjects:
-			relatorio_txt.write(str(s)+'\n')
-		relatorio_txt.write('\n\nContatos que receberam ou enviaram emails:\n\n\n')
+			doc.add_paragraph(str(s)+'\n')
+		doc.add_paragraph('\n\nContatos que receberam ou enviaram emails:\n\n\n')
 		for c in contacts:
-			relatorio_txt.write(str(c)+'\n')
-		relatorio_txt.write('\n\nDatas e nomes dos emails que contém transações bancárias:\n\n\n')
+			doc.add_paragraph(str(c)+'\n')
+		doc.add_paragraph('\n\nDatas e nomes dos emails que contém transações bancárias:\n\n\n')
 		for t in transactions:
-			relatorio_txt.write(str(t)+'\n')
-		relatorio_txt.close()
+			doc.add_paragraph(str(t)+'\n')
+		doc.save(self.destination_path+'relatório_geral_emails_%s.docx' % (self.id_inv,))
 
 	def text_to_html(self, texto):
 		return texto.replace('\t',4*'&nbsp;').replace('\n','<br/>')
@@ -218,14 +215,12 @@ class parse_emails():
 		topicos = topM.lda_Model(textos, npasses=20, num_words=15)
 		topM.topic_to_img(topicos, prefix=prefix)
 
-def main(filepath, id_inv):
-	p = parse_emails(filepath, id_inv)
+def main(filepath, id_inv, destination_path):
+	p = parse_emails(filepath, id_inv, destination_path)
 	p.email_to_excel()
 	p.docs_to_txt()
 	p.relatorio_geral()
-	p.topics()
+	# p.topics()
 
 if __name__ == '__main__':
-	filepath = sys.argv[1]
-	id_inv = sys.argv[2]
-	main(filepath, id_inv)
+	main(sys.argv[1], sys.argv[2], sys.argv[3])

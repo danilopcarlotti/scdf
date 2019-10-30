@@ -150,4 +150,4 @@ if __name__ == '__main__':
 		else:
 			processar_interceptacao_telefonica(arq_bilhetagem, id_inv, path_inicial, colunaOrig='Origem/IMEI',colunaDest='Destino/IMEI')
 	
-	subprocess.Popen('rm %swordcloud*.txt' % (path_inicial,), shell=True)
+	# subprocess.Popen('rm %swordcloud*.txt' % (path_inicial,), shell=True)

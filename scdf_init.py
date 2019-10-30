@@ -30,8 +30,8 @@ if not len(investigacoes_a_processar) == len(investigacoes_processadas):
 
 			print('Rodando o modulo de processamento de arquivos')
 			subprocess.call(['python3','%sprocessar_arquivos.py' % (path_scdf,), path_arquivos+i, id_inv, path_relatorios])
-			print('Acabou!\nRodando o modulo de topic modelling')
-			subprocess.call(['python3','%stopic_modelling_inv.py' % (path_scdf,), path_arquivos+i, id_inv, path_relatorios])
+			# print('Acabou!\nRodando o modulo de topic modelling')
+			# subprocess.call(['python3','%stopic_modelling_inv.py' % (path_scdf,), path_arquivos+i, id_inv, path_relatorios])
 			print('Acabou!\nRodando o modulo de word2vec')
 			subprocess.call(['python3','%sword2vec_textos_inv.py' % (path_scdf,), path_arquivos+i, id_inv])
 			print('Acabou! registrando a investigacao no arquivo respectivo!')
@@ -41,5 +41,3 @@ if not len(investigacoes_a_processar) == len(investigacoes_processadas):
 			arq_inv_processadas.close()
 
 arq_id_inv.close()
-
-print('Acabou! Seja feliz e volte sempre!')

@@ -157,7 +157,7 @@ class Ui_MainWindow(object):
         documentos_resultados = []
         for w in word.split(' '):
             doc_res_aux = []
-            word_db = mycol.find_one({'_id':word})
+            word_db = mycol.find_one({'_id':w})
             if word_db:
                 for doc in word_db['documents']:
                     doc_res_aux.append(doc)
@@ -169,7 +169,7 @@ class Ui_MainWindow(object):
             documento_relatorio = Document()
             for l in lista_consolidada_documentos:
                 self.listWid.addItem(doc)
-                documento_relatorio.add_paragraph(doc+'\n')
+                documento_relatorio.add_paragraph(l+'\n')
             documento_relatorio.save(path_relatorios+'documentos com palavras '+word+'.docx')
             msg.about(msg, "Sucesso!", "Foi gerado um relatório, salvo na pasta de relatórios, com os documentos em que a(s) seguinte(s) palavra(s) aparecem: "+word)
         else:

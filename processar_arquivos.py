@@ -31,17 +31,17 @@ def process_files(filepaths, destination_path, id_inv, pdf2txt, mycol):
     PARSER_EMAILS.email_to_excel()
     PARSER_EMAILS.relatorio_geral()
     i = index_files(filepaths)
-    i.save_paths_file(destination_path+'indice_arquivos_investigacao_'+id_inv, id_inv, excel_file=True)
+    i.save_paths_file(destination_path+'/indice_arquivos_investigacao_'+id_inv, id_inv, excel_file=True)
     r = recursive_folders()
     paths = r.find_files(filepaths)
     for f in paths:
         try:
             insert_words(pdf2txt.convert_Tika(f),str(f).split('/')[-1],mycol)
         except Exception as e:
-            pass
+            print(e)
     return True
 
-def main(filepaths,id_inv,destination_path):
+def main(filepaths, destination_path, id_inv):
     pdf2txt = pdf_to_text()
     myclient = MongoClient(mongo_url)
     mydb = myclient["SCDF_"+id_inv]

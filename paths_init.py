@@ -1,3 +1,3 @@
-path_arquivos = 'Teste/'
+path_arquivos = '/mnt/Dados/Documents/testescdf'
 path_scdf = ''
-path_relatorios = 'Teste/'
+path_relatorios = '/mnt/Dados/Documents/scdfweb/views/relatorios'

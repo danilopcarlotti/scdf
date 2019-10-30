@@ -1,3 +1,4 @@
+Cython
 sklearn
 gensim
 matplotlib
@@ -11,4 +12,5 @@ mail-parser
 tika-app
 pymongo
 wordcloud
-Cython
+docx
+bcrypt
