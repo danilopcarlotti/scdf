@@ -1,10 +1,10 @@
 from index_files import index_files
 from parse_emails import parse_emails
-from pymongo import MongoClient
-from remove_accents import remove_accents
-from pdf_to_text import pdf_to_text
 from mongo_url import mongo_url
+from pymongo import MongoClient
+from pdf_to_text import pdf_to_text
 from recursive_folders import recursive_folders
+from remove_accents import remove_accents
 import os, pymongo, sys
 
 def insert_words(texto, file, mycol):
@@ -26,12 +26,12 @@ def insert_words(texto, file, mycol):
             pass
     return True
 
-def process_files(filepaths, destination_path, id_inv, pdf2txt, mycol):
+def process_files(filepaths, destination_path, id_inv, pdf2txt, mydb, mycol):
     PARSER_EMAILS = parse_emails(filepaths, id_inv, destination_path)
-    PARSER_EMAILS.email_to_excel()
-    PARSER_EMAILS.relatorio_geral()
+    PARSER_EMAILS.email_to_excel(mydb)
+    PARSER_EMAILS.relatorio_geral(mydb)
     i = index_files(filepaths)
-    i.save_paths_file(destination_path+'/indice_arquivos_investigacao_'+id_inv, id_inv, excel_file=True)
+    i.save_paths_file(destination_path+'/indice_arquivos_investigacao_'+id_inv, id_inv, mydb=mydb)
     r = recursive_folders()
     paths = r.find_files(filepaths)
     for f in paths:
@@ -46,7 +46,7 @@ def main(filepaths, destination_path, id_inv):
     myclient = MongoClient(mongo_url)
     mydb = myclient["SCDF_"+id_inv]
     mycol = mydb["indice_palavras_documentos_"+id_inv]
-    process_files(filepaths,destination_path,id_inv,pdf2txt,mycol)
+    process_files(filepaths,destination_path,id_inv,pdf2txt,mydb,mycol)
 
 if __name__ == '__main__':
     main(sys.argv[1],sys.argv[2],sys.argv[3])

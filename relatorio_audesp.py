@@ -2,11 +2,13 @@ import pymongo, pandas as pd, pickle, os, re
 from docx import Document
 
 myclient = pymongo.MongoClient('mongodb://localhost:27017/')
+
 mydb = myclient['Audesp']
 entidades = mydb['entidades']
 licitacoes = mydb['licitacoes']
 licitantes = mydb['licitantes']
 municipios = mydb['municipios']
+socios_col = mydb["socios"]
 
 db_obitos = myclient['Pessoas']
 pessoas_mortas = db_obitos['pessoas_fisicas']
@@ -14,7 +16,7 @@ pessoas_mortas = db_obitos['pessoas_fisicas']
 db_rf = myclient["RF"]
 empresas = db_rf["Empresas"]
 
-path_relatorios = ''
+path_relatorios = 'relatorios/'
 
 # MATRIZ DE RISCO
 
@@ -25,17 +27,17 @@ def find_variaveis_receita_federal(cnpj_licitante):
     else:
         return (-1,-1,-1)
 
-# def empresa_loser(cnpj_licitante):
-#     return False
+def empresa_loser(cnpj_licitante):
+    return False
 
-# def ganha_loser(cnpj_licitante):
-#     return (False, [])
+def ganha_loser(cnpj_licitante):
+    return (False, [])
 
-# def sem_competicao(id_empresa):
-#     return (False, [])
+def sem_competicao(id_empresa):
+    return (False, [])
 
-# def valor_acumulado_empresa(id_empresa):
-#     return 0.0
+def valor_acumulado_empresa(id_empresa):
+    return 'Desconhecido'
 
 def pessoa_morta(cpf):
 	cpf = cpf.replace('/','').replace('-','').replace('.','')
@@ -62,8 +64,8 @@ def dados_entidade(id_entidade):
 	dic_ent = entidades.find_one({'_id':id_entidade})
 	if dic_ent:
 		dic_aux = {'nome_completo':dic_ent['nome_completo']}
-		dados_municipio = dados_municipio(dic_ent['municipio_id'])
-		return [dic_aux,dados_municipio]
+		dados_m = dados_municipio(dic_ent['municipio_id'])
+		return [dic_aux,dados_m]
 	return False
 
 def dados_licitantes(cnpj_licitante):
@@ -107,9 +109,9 @@ def relatorio_cnpj(cnpj):
 	texto = 'A empresa com CNPJ %s e razão social %s possui as seguintes informações, segundo consulta à base da RF que precisam ser validadas em tempo real:\n\n' % (str(cnpj_licitante),dados_licitante['nome_licitante'])
 	dados_rf = find_variaveis_receita_federal(cnpj_licitante)
 	if dados_rf:
-		texto += '\tSituação cadastral: %s\n' % (dados_rf['situacao_cadastral'],)
-		texto += '\tInício da atividade da empresa: %s\n' % (dados_rf['data_inicio_atividade'],)
-		texto += '\tPorte da empresa: %s\n' % (dados_rf['porte_empresa'],)
+		texto += '\tSituação cadastral: %s\n' % (dados_rf[0],)
+		texto += '\tInício da atividade da empresa: %s\n' % (dados_rf[1],)
+		texto += '\tPorte da empresa: %s\n' % (dados_rf[2],)
 	else:
 		texto += '\tNão foram encontradas informações na base da RF para a empresa.\n'
 	socios = dados_licitante['socios']
@@ -152,29 +154,43 @@ def relatorio_cnpj(cnpj):
 	document.save(path_relatorios+'relatório_%s.docx' % (cnpj_licitante,))
 
 def relatorio_socios(documento_socio):
-    documento_socio = documento_socio.replace('.','').replace('-','')
-    empresas_socio = []
-    dics = licitantes.find({'cpf_adm':documento_socio})
-    for dic in dics:
-        empresas_socio.append((dic['_id'],dic['nome_licitante']))
-    doc = Document() 
-    doc.add_paragraph('A pessoa com documento %s é sócia administradora das seguintes empresas:\n\n' % (documento_socio,))
-    if len(empresas_socio):
-        for cnpj, e in empresas_socio:
-            doc.add_paragraph(cnpj+' empresa de nome comercial '+e+'\n')
-    else:
-        doc.add_paragraph('Essa pessoa não é administradora de nenhuma empresa')
-    dados_morto = pessoa_morta(documento_socio)
+	documento_socio = documento_socio.replace('.','').replace('-','')
+	empresas_socio = []
+	dics = licitantes.find({'cpf_adm':documento_socio})
+	for dic in dics:
+		empresas_socio.append((dic['_id'],dic['nome_licitante']))
+	doc = Document() 
+	if len(empresas_socio):
+		doc.add_paragraph('A pessoa com documento %s é sócia administradora das seguintes empresas:\n\n' % (documento_socio,))
+		for cnpj, e in empresas_socio:
+			doc.add_paragraph(cnpj+' empresa de nome comercial '+e+'\n')
+	else:
+		doc.add_paragraph('Essa pessoa não é administradora de nenhuma empresa')
+	dados_morto = pessoa_morta(documento_socio)
 	if dados_morto:
 		doc.add_paragraph('\n\tESSA PESSOA MORREU. Dados do óbito:\n')
 		doc.add_paragraph('\nData do óbito:%s\n' % (dados_morto['Data_Obito']))
+	empresas_sociedade = []
+	dics_sociedades = socios_col.find_one({'_id':documento_socio})
+	if dics_sociedades:
+		for emp in dics_sociedades['empresas']:
+			if emp not in empresas_sociedade:
+				empresas_sociedade.append(str(emp))
+	if len(empresas_sociedade):
+		doc.add_paragraph('A pessoa com documento %s é sócia das seguintes empresas:\n\n' % (documento_socio,))
+		for emp in empresas_sociedade:
+			doc.add_paragraph('Empresa com CNPJ: %s\n' % (emp,))
+	else:
+		doc.add_paragraph('Não foram encontradas empresas para a pessoa')
 	doc.save(path_relatorios+'socio_empresas_cpf_%s.docx' % (documento_socio,))
 
 def main(cnpj, cpf):
-	cnpj = str(cnpj)
+	# cnpj = str(cnpj)
 	cpf = str(cpf)
-	relatorio_cnpj(cnpj)
+	# relatorio_cnpj(cnpj)
 	relatorio_socios(cpf)
 
 if __name__ == '__main__':
-	main('11311279000140','')
+	# main('','14947517808')
+	for i in ['016.604.778-32','514.031.961-68','132.287.898-61','335.747.903-68','445.483.118-15','099.151.658-38','897.847.078-53','335.390.221-04','789.564.637-00','180.714.888-28','051.750.548-72','157.743.878-79','874.801.314-53','850.141.848-04','166.929.548-60','047.424.594-23','565.853.064-49','030.904.548-74','970.671.648-34','092.898.758-28','535.701.701-87','932.027.331-68','945.091.828-72','096.704.778-16','021.208.681-23','594.563.531-68','931.695.828-87','017.614.328-93','420.055.406-25','055.598.078-26','632.008.991-15','489.395.108-44','049.769.128-09','441.786.111-00','010.133.619-54','701.676.723-04','217.392.768-09','074.323.687-40','793.046.561-68','079.968.868-14','955.874.628-20','037.867.258-45','587.634.147-91','424.748.198-35']:
+		main('', i)

@@ -1,15 +1,19 @@
 from bs4 import BeautifulSoup
+from docx import Document
 from gensim.models import Word2Vec
-from recursive_folders import recursive_folders
+
+from mongo_url import mongo_url
+from pymongo import MongoClient
+
 from pdf_to_text import pdf_to_text
+from recursive_folders import recursive_folders
 from topicModelling import topicModelling
 from word2vec_textos import word2vec_textos
-from docx import Document
 import sys, os, mailparser, base64, re, pandas as pd, subprocess, networkx as nx, matplotlib.pyplot as plt, datetime, time, argparse
 
 class parse_emails():
 	"""Classe para processamento de emails"""
-	def __init__(self, filepath, id_inv, destination_path):
+	def __init__(self, filepath, id_inv, destination_path, save_files=False):
 		self.bank_words = ['caixa','banco','itaú','bradesco','santander']
 		self.filepath = filepath
 		self.destination_path = destination_path
@@ -57,7 +61,7 @@ class parse_emails():
 		df = df.fillna(' ')
 		return list(df['assunto_limpo'].unique())
 
-	def email_to_excel(self):
+	def email_to_excel(self, mydb):
 		lista_emails = [i for i in self.paths_to_emails() if i[-4:] == '.msg']
 		rows = []
 		for msg in lista_emails:
@@ -86,10 +90,16 @@ class parse_emails():
 				dicionario_aux['destinatário_email'] = ''
 				rows.append(dicionario_aux)
 		if len(rows):
-			index = [i for i in range(len(rows))]
-			df = pd.DataFrame(rows,index=index)
-			df = df.applymap(lambda x: x.encode('unicode-escape','replace').decode('utf-8') if isinstance(x, str) else x)
-			df.to_excel(self.nome_relatorio,index=False)
+			df = pd.DataFrame(rows,index=[i for i in range(len(rows))])
+			df = df.applymap(lambda x: x.encode('unicode-escape','replace').decode('utf-8') if isinstance(x, str) else x)		
+			if self.save_files:
+				df.to_excel(self.nome_relatorio,index=False)
+			else:
+				columns = df.columns
+				mycol = mydb["relatorios_email_"+id_inv]
+				for _, row in df.iterrows():
+					dic_aux = {column:row[column] for column in columns}
+					mycol.insert_one(dic_aux)
 			self.docs_to_txt()
 
 	def email_to_graph(self):
@@ -177,30 +187,44 @@ class parse_emails():
 		df = df.applymap(lambda x: x.encode('unicode-escape','replace').decode('utf-8') if isinstance(x, str) else x)
 		df.to_excel(self.destination_path+'relatório_'+nome_entidade+'.xlsx',index=False)
 
-	def relatorio_geral(self):
+	def relatorio_geral(self, mydb):
 		try:
 			df = pd.read_excel(self.nome_relatorio)
 		except:
 			return
-		doc = Document()
 		df = df.fillna(' ')
 		contacts = self.email_contacts()
 		names_email = self.email_names()
 		subjects = self.email_subjects()
 		transactions = self.email_bank_transactions()
-		doc.add_paragraph('Arquivos de emails disponíveis:\n\n\n')
+		text_final = ''
+		# doc.add_paragraph('Arquivos de emails disponíveis:\n\n\n')
+		text_final += 'Arquivos de emails disponíveis:\n\n\n'
 		for n in names_email:
-			doc.add_paragraph(str(n)+'\n')
-		doc.add_paragraph('\n\nAssuntos dos emails:\n\n\n')
+			# doc.add_paragraph(str(n)+'\n')
+			text_final += str(n)+'\n'
+		# doc.add_paragraph('\n\nAssuntos dos emails:\n\n\n')
+		text_final += '\n\nAssuntos dos emails:\n\n\n'
 		for s in subjects:
-			doc.add_paragraph(str(s)+'\n')
-		doc.add_paragraph('\n\nContatos que receberam ou enviaram emails:\n\n\n')
+			# doc.add_paragraph(str(s)+'\n')
+			text_final += str(s)+'\n'
+		# doc.add_paragraph('\n\nContatos que receberam ou enviaram emails:\n\n\n')
+		text_final += '\n\nContatos que receberam ou enviaram emails:\n\n\n'
 		for c in contacts:
-			doc.add_paragraph(str(c)+'\n')
-		doc.add_paragraph('\n\nDatas e nomes dos emails que contém transações bancárias:\n\n\n')
+			# doc.add_paragraph(str(c)+'\n')
+			text_final += str(c)+'\n'
+		# doc.add_paragraph('\n\nDatas e nomes dos emails que contém transações bancárias:\n\n\n')
+		text_final += '\n\nDatas e nomes dos emails que contém transações bancárias:\n\n\n'
 		for t in transactions:
-			doc.add_paragraph(str(t)+'\n')
-		doc.save(self.destination_path+'relatório_geral_emails_%s.docx' % (self.id_inv,))
+			# doc.add_paragraph(str(t)+'\n')
+			text_final += str(t)+'\n'
+		if self.save_files:
+			doc = Document()
+			doc.add_paragraph(text_final)
+			doc.save(self.destination_path+'relatório_geral_emails_%s.docx' % (self.id_inv,))
+		else:
+			mycol = mydb["relatorios_geral_emails_"+id_inv]
+			mycol.insert_one({'relatorio_geral':text_final})
 
 	def text_to_html(self, texto):
 		return texto.replace('\t',4*'&nbsp;').replace('\n','<br/>')
@@ -216,11 +240,13 @@ class parse_emails():
 		topM.topic_to_img(topicos, prefix=prefix)
 
 def main(filepath, id_inv, destination_path):
+    mydb = myclient["SCDF_"+id_inv]
 	p = parse_emails(filepath, id_inv, destination_path)
-	p.email_to_excel()
+	p.email_to_excel(mydb)
 	p.docs_to_txt()
-	p.relatorio_geral()
+	p.relatorio_geral(mydb)
 	# p.topics()
 
 if __name__ == '__main__':
+	myclient = MongoClient(mongo_url)
 	main(sys.argv[1], sys.argv[2], sys.argv[3])
