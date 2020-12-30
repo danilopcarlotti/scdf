@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    
+    <body>
+        <h1 style="text-align: center;">
+            Estas são suas investigações. Escolha qual delas acessar abaixo.
+        </h1>
+        <br>
+        <br>
+        <br>
+        <div style="text-align:center">
+                <form action="/relatorios" method="POST" name="form_inv">
+                    <select name="id_inv">
+                    {% for item in lista_investigacoes %}
+                        <option value="{{item}}">{{item}}</option>
+                    {% endfor %}
+                    </select>
+                    <input type="hidden" name="id_responsavel" value="{{id_responsavel}}"> 
+                    <br>
+                    <br>
+                    <button>Selecionar investigação</button>
+                </form>
+        </div>>
+    </body>
+
+</html>

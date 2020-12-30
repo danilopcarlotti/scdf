@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    
+    <body> 
+        <h1 style="text-align: center;">
+            <p>Bem-vindo ao SCDF - versão WEB!</p>
+        </h1>
+        <form action="/download" method="POST" name="file_download">
+            <select name="filename">
+            {% for nome in links_download %}
+                <option value="{{nome}}">{{nome}}</option>
+            {% endfor %}
+            </select>
+            <br>
+            <br>
+            <button>Download de relatório</button>
+        </form>
+        </div>
+    </body>
+
+</html>

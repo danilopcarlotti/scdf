@@ -1,16 +1,28 @@
 # SCDF
 Solução em Ciência de dados Forense
 
-Texto com introdução à ferramenta: https://medium.com/@danilo_37535/solu%C3%A7%C3%A3o-em-ci%C3%AAncia-de-dados-forense-scdf-ccceec05495d
-
-É necessário ter instalado:
+É necessário instalar:
 
 i) Python >= 3.5
 ii) MongoDB
+iii) `pip install -r requirements.txt`
 
-Para usar a ferramenta do módulo de processamento de documentos, após a instalação das bibliotecas necessárias é preciso:
+O endereço de conexão com o banco de dados fica armazenado no arquivo `.env`, na raiz e que deve ser alterado conforme a necessidade.
 
-1) Preencher o arquivo paths_init com os respectivos caminhos para que o processamento ocorra
-2) Rodar o processamento com o comando "python3 scdf_init.py"
-3) Abrir a ferramenta visual com "python3 pesquisa_palavras_documentos_logo.py"
-4) Usá-la a partir da GUI e consultar os relatórios gerados na pasta respectiva
+## DIVISÃO DA FERRAMENTA EM MÓDULOS
+
+#### Módulo de upload de investigações
+
+- Para fazer upload de uma investigação é necessário gerar id para o investigador e a investigação. Em seguida, rodar o comando:
+`cd scdf/src`
+`python upload_investigacao.py [PATH DOS DADOS] [ID INVESTIGADOR] [ID INVESTIGACAO]`
+
+#### Módulo de servidor web para acesso às investigações
+- Para rodar o servidor do SCDF na porta 8000
+`cd scdf/server`
+`uvicorn main_api:app`
+
+#### Módulo de administração
+- Para verificar usuário, investigações e deletar o que for necessário com o jupyter notebook
+`cd scdf/src`
+`jupyter lab`

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    
+    <body>
+        <h1 style="text-align: center;">
+            A investigação escolhida foi: {{id_inv}}. 
+        </h1>
+        <br>
+        <br>
+        Selecione abaixo as palavras a serem pesquisada nos arquivos desta investigação, separadas por espaço.
+        <br>
+        <div style="text-align:center">
+                <form action="/download_pesquisa" method="POST" name="form_inv">
+                    <input type="text" placeholder="Insira as palavras" name="word">
+                    <input type="hidden" name="id_inv" value="{{id_inv}}"> 
+                    <br>
+                    <br>
+                    <button>Pesquisar palavra</button>
+                </form>
+        </div>>
+    </body>
+
+</html>
