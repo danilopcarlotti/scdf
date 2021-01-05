@@ -8,11 +8,18 @@
             <p>Bem-vindo ao SCDF - versão WEB!</p>
         </h1>
         <h3 style="text-align: center;">
-            <p>Para acessar suas investigações insira na barra de endereço uma barra "/" e o seu id de usuário. </p>
-            <p>Depois aperte enter.</p>
-            <p>Para pesquisar em uma de suas investigações insira na barra de endereço uma barra "/", o id da investigação, outra "/" e "pesquisar". </p>
-            <p>Depois aperte enter.</p>
-            {{url}}
+            <p>Para acessar suas investigações, digite abaixo seu nome de usuário. </p>
+            <form action="/investigacoes">
+                <input type="search" name="id_responsavel" placeholder="Id do usuário" size="25">
+                <button type="submit">Acessar investigação</button>
+            </form>
+            <br>
+            <br>
+            <p>Para pesquisar por palavras-chave em uma de suas investigações, insira abaixo o id da investigação. </p>
+            <form action="/pesquisar">
+                <input type="search" name="id_inv" placeholder="Id da investigação" size="25">
+                <button type="submit">Pesquisar palavra</button>
+            </form>
         </h3>
         </div>
     </body>

@@ -35,8 +35,8 @@ def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.get("/{id_responsavel}", response_class=HTMLResponse)
-def select_investigation(request: Request, id_responsavel: str):
+@app.post("/investigacoes")
+def select_investigation(request: Request, id_responsavel: str = Form(...)):
     lista_investigacoes = investigacoes_usuario(id_responsavel)
     return templates.TemplateResponse(
         "selecionar_inv.html",
@@ -70,8 +70,8 @@ def download(filename: str = Form(...)):
         filename=filename,
     )
 
-@app.get("/{id_inv}/pesquisar")
-def pesquisa(request: Request, id_inv : str):
+@app.post("/pesquisar")
+def pesquisa(request: Request, id_inv : str = Form(...)):
     return templates.TemplateResponse(
         "pesquisar.html",
         {"request": request, "id_inv":id_inv},
