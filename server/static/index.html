@@ -9,16 +9,16 @@
         </h1>
         <h3 style="text-align: center;">
             <p>Para acessar suas investigações, digite abaixo seu nome de usuário. </p>
-            <form action="/investigacoes">
+            <form action="/investigacoes" method="POST">
                 <input type="search" name="id_responsavel" placeholder="Id do usuário" size="25">
-                <button type="submit">Acessar investigação</button>
+                <button type="submit">Acessar relatórios da investigação</button>
             </form>
             <br>
             <br>
             <p>Para pesquisar por palavras-chave em uma de suas investigações, insira abaixo o id da investigação. </p>
-            <form action="/pesquisar">
+            <form action="/pesquisar" method="POST">
                 <input type="search" name="id_inv" placeholder="Id da investigação" size="25">
-                <button type="submit">Pesquisar palavra</button>
+                <button type="submit">Pesquisar em investigação</button>
             </form>
         </h3>
         </div>

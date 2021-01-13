@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <style>
+            .myDiv {
+              text-align: center;
+            }
+            </style>
     </head>
     
     <body>
@@ -9,11 +14,14 @@
         </h1>
         <br>
         <br>
-        Selecione abaixo as palavras a serem pesquisada nos arquivos desta investigação, separadas por espaço.
+        <div class="myDiv">
+            Selecione abaixo as palavras a serem pesquisada nos arquivos desta investigação, separadas por espaço.
+        </div>
+        
         <br>
         <div style="text-align:center">
                 <form action="/download_pesquisa" method="POST" name="form_inv">
-                    <input type="text" placeholder="Insira as palavras" name="word">
+                    <input type="text" placeholder="Insira as palavras" name="word" size="50">
                     <input type="hidden" name="id_inv" value="{{id_inv}}"> 
                     <br>
                     <br>
