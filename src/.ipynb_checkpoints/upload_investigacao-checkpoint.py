@@ -29,15 +29,19 @@ mongo_url = os.getenv("mongo_url")
 def inserir_investigacao(id_inv, id_responsavel, myclient):
     mydb_master = myclient["SCDF"]
     col = mydb_master["investigacoes"]
-    inv = col.find_one({
-        "id_investigacao": id_inv,
-		"id_responsavel":id_responsavel,
-    })
-    if not inv:
-        col.insert_one({
+    inv = col.find_one(
+        {
             "id_investigacao": id_inv,
-            "id_responsavel":id_responsavel,
-        })
+            "id_responsavel": id_responsavel,
+        }
+    )
+    if not inv:
+        col.insert_one(
+            {
+                "id_investigacao": id_inv,
+                "id_responsavel": id_responsavel,
+            }
+        )
 
 
 def indice_arquivos(filepaths, id_inv, path_inicial, mydb):
@@ -47,7 +51,7 @@ def indice_arquivos(filepaths, id_inv, path_inicial, mydb):
         id_inv,
         list_paths=filepaths,
         csv_file=True,
-        mydb=mydb
+        mydb=mydb,
     )
 
 
@@ -89,7 +93,7 @@ def processar_emails(file_list, id_inv, destination_path, myclient):
 
 def unzip_files(filepaths):
     for file in filepaths:
-        with ZipFile(file, 'r') as zip_ref:
+        with ZipFile(file, "r") as zip_ref:
             zip_ref.extractall("/".join(file.split("/")[:-1]))
 
 
@@ -116,7 +120,7 @@ if __name__ == "__main__":
 
     myclient = MongoClient(mongo_url)
     mydb = myclient["SCDF_" + id_inv]
-    
+
     destination_path = sys.argv[4]
     print("Id da investigação registrado: ", id_inv)
     inserir_investigacao(id_inv, id_responsavel, myclient)
@@ -139,7 +143,9 @@ if __name__ == "__main__":
 
     # PROCESSAR EMAILS
     print("Processando os emails e gerando relatório")
-    processar_emails([i for i in list_files if i[-3:] == 'msg'], id_inv, destination_path, myclient)
+    processar_emails(
+        [i for i in list_files if i[-3:] == "msg"], id_inv, destination_path, myclient
+    )
 
     # PROCESSAR OS PDF'S E ARQUIVOS DE WORD
     print("Processando os arquivos de texto")
@@ -147,12 +153,7 @@ if __name__ == "__main__":
         list_files,
         mydb,
     )
-    indice_arquivos(
-        list_files,
-        id_inv,
-        path_inicial,
-        mydb
-    )
+    indice_arquivos(list_files, id_inv, path_inicial, mydb)
 
     # # VETORIZAÇÃO
     # vetorizacao_textos(path_inicial+'indice_arquivos_investigacao_'+str(id_inv)+'.csv',path_inicial)

@@ -49,7 +49,9 @@ def select_investigation(request: Request, id_responsavel: str = Form(...)):
 
 
 @app.post("/relatorios")
-def relatorios(request: Request, id_responsavel: str = Form(...), id_inv: str = Form(...)):
+def relatorios(
+    request: Request, id_responsavel: str = Form(...), id_inv: str = Form(...)
+):
     gerar_relatorios(id_responsavel, id_inv)
     links_download = [
         "relatório_emails_investigacao_{}_{}.xlsx".format(id_responsavel, id_inv),
@@ -70,19 +72,23 @@ def download(filename: str = Form(...)):
         filename=filename,
     )
 
+
 @app.post("/pesquisar")
-def pesquisa(request: Request, id_inv : str = Form(...)):
+def pesquisa(request: Request, id_inv: str = Form(...)):
     return templates.TemplateResponse(
         "pesquisar.html",
-        {"request": request, "id_inv":id_inv},
+        {"request": request, "id_inv": id_inv},
     )
+
 
 @app.post("/download_pesquisa")
 def download_pesquisa(id_inv: str = Form(...), word: str = Form(...)):
-    path = str(PATH_ROOT) + "scdf/server/files/investigacao_{}_palavra_{}.docx".format(id_inv, word)
+    path = str(PATH_ROOT) + "scdf/server/files/investigacao_{}_palavra_{}.docx".format(
+        id_inv, word
+    )
     save_file(word, id_inv, path)
     return FileResponse(
         path,
         media_type="application/octet-stream",
-        filename=word+".docx",
+        filename=word + ".docx",
     )

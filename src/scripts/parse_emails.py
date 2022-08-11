@@ -8,7 +8,6 @@ import time
 import os
 import extract_msg
 
-from docx import Document
 from pymongo import MongoClient
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
@@ -16,9 +15,6 @@ from pathlib import Path
 
 PATH_ROOT = Path().absolute().parent.parent
 sys.path.append(str(PATH_ROOT))
-
-
-from scdf.src.scripts.recursive_folders import recursive_folders
 
 load_dotenv(find_dotenv())
 mongo_url = os.getenv("mongo_url")
@@ -28,7 +24,7 @@ class parse_emails:
     """Classe para processamento de emails"""
 
     def __init__(self, file_list, id_inv, destination_path, save_files=False):
-        self.bank_words = ["caixa", "banco", "itaú", "bradesco", "santander"]
+        self.bank_words = ["caixa", "banco", "itaú", "bradesco", "santander", "nubank"]
         self.save_files = save_files
         self.file_list = file_list
         self.destination_path = destination_path
@@ -92,8 +88,8 @@ class parse_emails:
                     "assunto": subject_e,
                     "assunto_limpo": subject_e_clean,
                     "anexos": str(attachments),
-                    "remetente_email" : from_e,
-                    "destinatário_email" : recipient_e,
+                    "remetente_email": from_e,
+                    "destinatário_email": recipient_e,
                 }
                 rows.append(dicionario_aux)
         if len(rows):
